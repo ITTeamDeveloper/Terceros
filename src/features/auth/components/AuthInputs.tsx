@@ -11,26 +11,28 @@ import {
   VisibilityOutlined as VisibilityOutlinedIcon,
   VisibilityOffOutlined as VisibilityOffOutlinedIcon,
 } from '@mui/icons-material'
+import { typo, fontFamily } from '../../../shared/styles/typography'
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
-    height: 44,
-    fontSize: 12,
-    fontFamily: 'Calibri, sans-serif',
-    borderRadius: '6px',
+    height: 46,
+    fontSize: 13,
+    fontFamily: fontFamily.body,
+    fontWeight: 500,
+    borderRadius: '10px',
     bgcolor: '#FFFFFF',
-    '& fieldset': { borderColor: '#EEEEEE' },
+    '& fieldset': { borderColor: '#EAE5FF', borderWidth: 1.5 },
     '&:hover fieldset': { borderColor: '#B19BFD' },
-    '&.Mui-focused fieldset': { borderColor: '#B19BFD', borderWidth: 1 },
+    '&.Mui-focused fieldset': { borderColor: '#8B6CFB', borderWidth: 1.5 },
+  },
+  '& .MuiOutlinedInput-input': {
+    color: '#1D1D1D',
+    '&::placeholder': { color: '#9C9CA8', opacity: 1 },
   },
 }
 
 function AuthLabel({ children }: { children: string }) {
-  return (
-    <Typography sx={{ fontSize: 12, fontWeight: 700, color: '#1D1D1D', mb: 0.75, fontFamily: 'Calibri, sans-serif' }}>
-      {children}
-    </Typography>
-  )
+  return <Typography sx={{ ...typo.label, mb: 0.75 }}>{children}</Typography>
 }
 
 interface AuthTextFieldProps {
@@ -65,9 +67,7 @@ export function AuthTextField({
         slotProps={{
           input: {
             startAdornment: (
-              <InputAdornment position="start">
-                {icon}
-              </InputAdornment>
+              <InputAdornment position="start">{icon}</InputAdornment>
             ),
           },
         }}
@@ -107,15 +107,15 @@ export function AuthPasswordField({
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <LockOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />
+                <LockOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton size="small" onClick={() => setShow((v) => !v)} edge="end">
                   {show
-                    ? <VisibilityOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />
-                    : <VisibilityOffOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+                    ? <VisibilityOutlinedIcon sx={{ fontSize: 16, color: '#9C9CA8' }} />
+                    : <VisibilityOffOutlinedIcon sx={{ fontSize: 16, color: '#9C9CA8' }} />}
                 </IconButton>
               </InputAdornment>
             ),

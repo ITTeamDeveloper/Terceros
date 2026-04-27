@@ -36,7 +36,7 @@ export function AppMessage({
         onClose={onClose}
         severity={severityFromStatus(statusCode)}
         variant="filled"
-        sx={{ width: '100%', fontFamily: 'Calibri, sans-serif' }}
+        sx={{ width: '100%', fontFamily: 'Inter, sans-serif' }}
       >
         {message}
       </Alert>

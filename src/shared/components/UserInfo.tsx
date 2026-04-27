@@ -40,7 +40,7 @@ export function UserInfo({ variant = 'topbar' }: UserInfoProps) {
         flexShrink: 0,
       }}
     >
-      <Typography sx={{ color: '#fff', fontWeight: 700, fontSize, fontFamily: 'Calibri, sans-serif' }}>
+      <Typography sx={{ color: '#fff', fontWeight: 700, fontSize, fontFamily: 'Inter, sans-serif' }}>
         {initial}
       </Typography>
     </Box>
@@ -61,10 +61,10 @@ export function UserInfo({ variant = 'topbar' }: UserInfoProps) {
       >
         {avatar(32, 13)}
         <Box>
-          <Typography sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: 12, fontFamily: 'Calibri, sans-serif' }}>
+          <Typography sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: 12, fontFamily: 'Inter, sans-serif' }}>
             {name}
           </Typography>
-          <Typography sx={{ color: '#B19BFD', fontSize: 10, fontFamily: 'Calibri, sans-serif' }}>
+          <Typography sx={{ color: '#B19BFD', fontSize: 10, fontFamily: 'Inter, sans-serif' }}>
             {company}
           </Typography>
         </Box>
@@ -89,10 +89,10 @@ export function UserInfo({ variant = 'topbar' }: UserInfoProps) {
         }}
       >
         <Box sx={{ textAlign: 'right' }}>
-          <Typography sx={{ fontWeight: 700, fontSize: 13, color: '#1D1D1D', fontFamily: 'Calibri, sans-serif' }}>
+          <Typography sx={{ fontWeight: 700, fontSize: 13, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}>
             {name}
           </Typography>
-          <Typography sx={{ fontSize: 11, color: '#B19BFD', fontFamily: 'Calibri, sans-serif' }}>
+          <Typography sx={{ fontSize: 11, color: '#B19BFD', fontFamily: 'Inter, sans-serif' }}>
             {company}
           </Typography>
         </Box>
@@ -120,7 +120,7 @@ export function UserInfo({ variant = 'topbar' }: UserInfoProps) {
           onClick={handleLogout}
           sx={{
             fontSize: 13,
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             color: '#1D1D1D',
             '&:hover': { bgcolor: '#F3F0FF', color: '#B19BFD' },
           }}

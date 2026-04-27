@@ -1,15 +1,17 @@
 import { api } from './services'
 import type {
   AutorizarRequest,
-  DocumentoAutorizadoResponse,
+  DocumentoAutorizadoListResponse,
   DocumentoListResponse,
+  ITablaParams,
   MessageResponse,
+  PageResponse,
 } from './interfaces'
 
-const subir = async (archivo: File, empresaIds: string[]): Promise<MessageResponse> => {
+const subir = async (archivos: File[], empresaId: string): Promise<MessageResponse> => {
   const formData = new FormData()
-  formData.append('archivo', archivo)
-  empresaIds.forEach((id) => formData.append('empresaIds', id))
+  archivos.forEach((archivo) => formData.append('archivos', archivo))
+  formData.append('empresaId', empresaId)
 
   const { data } = await api.post<MessageResponse>('/documentos', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -17,8 +19,14 @@ const subir = async (archivo: File, empresaIds: string[]): Promise<MessageRespon
   return data
 }
 
-const listar = async (): Promise<DocumentoListResponse[]> => {
-  const { data } = await api.get<DocumentoListResponse[]>('/documentos')
+const listar = async (
+  params: ITablaParams,
+  signal?: AbortSignal,
+): Promise<PageResponse<DocumentoListResponse>> => {
+  const { data } = await api.get<PageResponse<DocumentoListResponse>>('/documentos', {
+    params,
+    signal,
+  })
   return data
 }
 
@@ -32,8 +40,14 @@ const autorizar = async (payload: AutorizarRequest): Promise<MessageResponse> =>
   return data
 }
 
-const listarAutorizados = async (): Promise<DocumentoAutorizadoResponse[]> => {
-  const { data } = await api.get<DocumentoAutorizadoResponse[]>('/documentos/autorizados')
+const listarAutorizados = async (
+  params: ITablaParams,
+  signal?: AbortSignal,
+): Promise<PageResponse<DocumentoAutorizadoListResponse>> => {
+  const { data } = await api.get<PageResponse<DocumentoAutorizadoListResponse>>(
+    '/documentos/autorizados',
+    { params, signal },
+  )
   return data
 }
 

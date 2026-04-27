@@ -7,12 +7,14 @@ import {
   MailOutlined as MailOutlinedIcon,
   PersonOutlined as PersonOutlinedIcon,
   BusinessOutlined as BusinessOutlinedIcon,
+  ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material'
 import { AxiosError } from 'axios'
 import { AuthBrandPanel } from '../components/AuthBrandPanel'
 import { AuthTextField, AuthPasswordField } from '../components/AuthInputs'
 import { authServices } from '../../../services/authServices'
 import { AppMessage } from '../../../shared/components'
+import { typo } from '../../../shared/styles/typography'
 
 interface MessageState {
   open: boolean
@@ -62,35 +64,40 @@ function Register() {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <AuthBrandPanel />
+      <AuthBrandPanel glow2Color="#F3BB4A" />
 
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F3F0FF', py: 4 }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#F7F4FF',
+          p: '24px 40px',
+        }}
+      >
         <Box
           sx={{
-            width: 420,
+            width: 480,
             bgcolor: '#FFFFFF',
-            borderRadius: '12px',
-            p: 5,
-            boxShadow: '0 4px 24px rgba(177,155,253,0.13)',
+            borderRadius: '18px',
+            p: '36px 40px 40px 40px',
+            boxShadow: '0 18px 48px rgba(139, 108, 251, 0.12)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 3,
+            gap: 2.25,
           }}
         >
-          <Box>
-            <Typography sx={{ fontWeight: 700, fontSize: 24, color: '#1D1D1D', fontFamily: 'Calibri, sans-serif' }}>
-              Crear cuenta
-            </Typography>
-            <Typography sx={{ fontSize: 13, color: '#888888', mt: 0.75, fontFamily: 'Calibri, sans-serif' }}>
-              Completa los datos para registrarte en la plataforma
-            </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography sx={{ ...typo.display2, fontSize: 32 }}>Crea tu cuenta.</Typography>
+            <Typography sx={typo.subtitle}>Completa tus datos para empezar a usar la plataforma.</Typography>
           </Box>
 
           <Box sx={{ display: 'flex', gap: 1.5 }}>
             <AuthTextField
               label="Nombre"
               placeholder="Ej: Juan"
-              icon={<PersonOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+              icon={<PersonOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
               value={nombre}
               onChange={setNombre}
               sx={{ flex: 1 }}
@@ -98,7 +105,7 @@ function Register() {
             <AuthTextField
               label="Apellido"
               placeholder="Ej: Pérez"
-              icon={<PersonOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+              icon={<PersonOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
               value={apellido}
               onChange={setApellido}
               sx={{ flex: 1 }}
@@ -108,7 +115,7 @@ function Register() {
           <AuthTextField
             label="Correo electrónico"
             placeholder="ejemplo@empresa.com"
-            icon={<MailOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+            icon={<MailOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
             value={email}
             onChange={setEmail}
           />
@@ -116,7 +123,7 @@ function Register() {
           <AuthTextField
             label="Empresa / Estudio"
             placeholder="Nombre del estudio o empresa"
-            icon={<BusinessOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+            icon={<BusinessOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
             value={company}
             onChange={setCompany}
           />
@@ -129,7 +136,7 @@ function Register() {
               sx={{ flex: 1 }}
             />
             <AuthPasswordField
-              label="Confirmar contraseña"
+              label="Confirmar"
               value={confirm}
               onChange={setConfirm}
               sx={{ flex: 1 }}
@@ -140,32 +147,24 @@ function Register() {
             fullWidth
             onClick={handleSubmit}
             disabled={loading}
+            endIcon={!loading && <ArrowForwardIcon sx={{ fontSize: 16, color: '#E3734F' }} />}
             sx={{
-              height: 46,
-              bgcolor: '#B19BFD',
+              ...typo.buttonLg,
+              height: 50,
+              bgcolor: '#1D1D1D',
               color: '#FFFFFF',
-              fontWeight: 700,
-              fontSize: 14,
-              fontFamily: 'Calibri, sans-serif',
-              borderRadius: '6px',
-              textTransform: 'none',
-              boxShadow: 'none',
-              '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
-              '&.Mui-disabled': { bgcolor: '#D7CCFE', color: '#FFFFFF' },
+              borderRadius: '12px',
+              boxShadow: '0 8px 18px rgba(29,29,29,0.20)',
+              '&:hover': { bgcolor: '#000000', boxShadow: '0 8px 18px rgba(29,29,29,0.28)' },
+              '&.Mui-disabled': { bgcolor: '#3A3A3A', color: '#FFFFFF' },
             }}
           >
             {loading ? 'Creando...' : 'Crear cuenta'}
           </Button>
 
           <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: 12, color: '#888888', fontFamily: 'Calibri, sans-serif' }}>
-              ¿Ya tienes cuenta?
-            </Typography>
-            <Typography
-              component={Link}
-              to="/login"
-              sx={{ fontSize: 12, fontWeight: 700, color: '#B19BFD', fontFamily: 'Calibri, sans-serif', textDecoration: 'none' }}
-            >
+            <Typography sx={typo.caption}>¿Ya tienes cuenta?</Typography>
+            <Typography component={Link} to="/login" sx={typo.link}>
               Inicia sesión
             </Typography>
           </Box>

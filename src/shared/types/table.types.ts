@@ -3,7 +3,7 @@ import React from 'react'
 export interface ColumnDef<T> {
   label: string
   key: keyof T
-  render?: (value: any, row: T) => React.ReactNode
+  render?: (value: any, row: T, index: number) => React.ReactNode
 }
 
 export interface TableAction<T = any> {
@@ -18,9 +18,14 @@ export interface SharedTableProps<T> {
   data: T[]
   actions?: TableAction<T>[]
   onSearch?: (term: string) => void
+  onSearchInput?: () => void
+  searchPlaceholder?: string
   onPageChange?: (page: number, pageSize: number) => void
   totalItems?: number
   loading?: boolean
   onAdd?: () => void
   addLabel?: string
+  onRefresh?: () => void
+  title?: string
+  maxBodyHeight?: number | string
 }

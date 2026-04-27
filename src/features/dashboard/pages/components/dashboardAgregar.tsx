@@ -1,8 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { UploadFileOutlined as UploadFileIcon } from '@mui/icons-material'
-import { SharedPanel, SharedCombobox } from '../../../../shared/components'
+import {
+  Close as CloseIcon,
+  UploadFileOutlined as UploadFileIcon,
+} from '@mui/icons-material'
+import { SharedPanel, SharedSelect } from '../../../../shared/components'
 import type { ComboOption } from '../../../../shared/components'
 import type { useAgregarDocumento } from '../customHooks/useAgregarDocumento'
 
@@ -19,14 +23,19 @@ export function DashboardAgregar({
 }: DashboardAgregarProps) {
   const {
     open,
-    archivo,
-    empresasSeleccionadas,
+    archivos,
+    empresa,
     saving,
+    feedback,
+    maxArchivos,
     cerrar,
     guardar,
-    setArchivo,
-    setEmpresasSeleccionadas,
+    setEmpresa,
+    agregarArchivos,
+    quitarArchivo,
   } = controller
+
+  const restantes = maxArchivos - archivos.length
 
   return (
     <SharedPanel
@@ -35,16 +44,16 @@ export function DashboardAgregar({
       onSave={guardar}
       title="Subir documento"
       loading={saving}
+      feedback={feedback}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-        <SharedCombobox
-          label="Empresas"
-          placeholder="Selecciona una o más empresas"
+        <SharedSelect
+          label="Empresa"
+          placeholder="Selecciona una empresa"
           options={empresas}
-          value={empresasSeleccionadas}
-          onChange={setEmpresasSeleccionadas}
+          value={empresa}
+          onChange={setEmpresa}
           loading={loadingEmpresas}
-          multiple
         />
 
         <Box>
@@ -53,15 +62,16 @@ export function DashboardAgregar({
               fontSize: 12,
               fontWeight: 700,
               color: '#1D1D1D',
-              fontFamily: 'Calibri, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               mb: 1,
             }}
           >
-            Archivo (.xlsx)
+            Archivos (.xlsx) — máximo {maxArchivos}
           </Typography>
           <Button
             component="label"
             fullWidth
+            disabled={restantes <= 0}
             startIcon={<UploadFileIcon sx={{ fontSize: 18 }} />}
             sx={{
               height: 44,
@@ -71,21 +81,74 @@ export function DashboardAgregar({
               color: '#1D1D1D',
               fontWeight: 500,
               fontSize: 12,
-              fontFamily: 'Calibri, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               border: '1px dashed #B19BFD',
               borderRadius: '6px',
               textTransform: 'none',
               '&:hover': { bgcolor: '#F3F0FF', borderColor: '#9B82FC' },
+              '&.Mui-disabled': {
+                color: '#9C9CA8',
+                borderColor: '#EEEEEE',
+              },
             }}
           >
-            {archivo ? archivo.name : 'Seleccionar archivo'}
+            {restantes > 0
+              ? `Seleccionar archivos (${archivos.length}/${maxArchivos})`
+              : `Máximo alcanzado (${archivos.length}/${maxArchivos})`}
             <input
               type="file"
+              multiple
               accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               hidden
-              onChange={(e) => setArchivo(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                const picked = Array.from(e.target.files ?? [])
+                if (picked.length === 0) return
+                agregarArchivos(picked)
+                e.target.value = ''
+              }}
             />
           </Button>
+
+          {archivos.length > 0 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+              {archivos.map((file, i) => (
+                <Box
+                  key={`${file.name}-${i}`}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    px: 1.5,
+                    py: 0.75,
+                    bgcolor: '#F3F0FF',
+                    border: '1px solid #EAE5FF',
+                    borderRadius: '6px',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      flex: 1,
+                      fontSize: 12,
+                      fontFamily: 'Inter, sans-serif',
+                      color: '#1D1D1D',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {file.name}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => quitarArchivo(i)}
+                    sx={{ p: 0.25, color: '#1D1D1D' }}
+                  >
+                    <CloseIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
         </Box>
       </Box>
     </SharedPanel>

@@ -1,3 +1,5 @@
+import Alert from '@mui/material/Alert'
+import type { AlertColor } from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -8,6 +10,14 @@ import Typography from '@mui/material/Typography'
 import { Close as CloseIcon } from '@mui/icons-material'
 import type { SharedPanelProps } from '../types/panel.types'
 
+function severityFromStatus(status?: number): AlertColor {
+  if (!status) return 'info'
+  if (status >= 500) return 'error'
+  if (status >= 400) return 'warning'
+  if (status >= 300) return 'info'
+  return 'success'
+}
+
 export function SharedPanel({
   open,
   onClose,
@@ -15,6 +25,7 @@ export function SharedPanel({
   title,
   children,
   loading = false,
+  feedback,
 }: SharedPanelProps) {
   return (
     <Drawer
@@ -49,7 +60,7 @@ export function SharedPanel({
             fontWeight: 700,
             fontSize: 16,
             color: '#1D1D1D',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
           }}
         >
           {title}
@@ -67,6 +78,18 @@ export function SharedPanel({
       <Box sx={{ flex: 1, overflowY: 'auto', px: 3, py: 3 }}>
         {children}
       </Box>
+
+      {feedback?.open && (
+        <Box sx={{ px: 3, pb: 2 }}>
+          <Alert
+            severity={severityFromStatus(feedback.statusCode)}
+            variant="filled"
+            sx={{ fontSize: 12, fontFamily: 'Inter, sans-serif' }}
+          >
+            {feedback.message}
+          </Alert>
+        </Box>
+      )}
 
       {/* Footer fijo */}
       <Divider />
@@ -90,7 +113,7 @@ export function SharedPanel({
             fontSize: 13,
             borderColor: '#EEEEEE',
             color: '#1D1D1D',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             '&:hover': { borderColor: '#B19BFD', bgcolor: '#F3F0FF' },
           }}
         >
@@ -106,7 +129,7 @@ export function SharedPanel({
             fontWeight: 700,
             fontSize: 13,
             bgcolor: '#B19BFD',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             boxShadow: 'none',
             '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
             '&.Mui-disabled': { bgcolor: '#D4C8FE', color: '#fff' },
