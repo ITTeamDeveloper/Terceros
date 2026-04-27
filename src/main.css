@@ -1,0 +1,176 @@
+/* ─── Tokens ─────────────────────────────────────────────── */
+:root {
+  --color-primary:        #B19BFD;
+  --color-dark:           #1D1D1D;
+  --color-table-alt:      #F3F0FF;
+  --color-border:         #EEEEEE;
+  --color-white:          #FFFFFF;
+  --color-text-on-primary:#FFFFFF;
+
+  --font-base:            'Calibri', sans-serif;
+  --font-heading:         'Raleway', sans-serif;
+  --font-body:            'Open Sans', sans-serif;
+
+  --text-base:            11pt;
+  --text-h1:              14pt;
+  --text-h2:              12pt;
+  --text-h3:              11pt;
+  --text-cover:           18pt;
+}
+
+/* ─── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+html, body {
+  font-family: var(--font-base);
+  font-size: var(--text-base);
+  color: var(--color-dark);
+  background-color: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Tipografía ─────────────────────────────────────────── */
+h1 {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+h2 {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+h3 {
+  font-size: var(--text-h3);
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+p, span, li, td, th {
+  font-size: var(--text-base);
+  color: var(--color-dark);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Tablas ─────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-base);
+  font-size: var(--text-base);
+}
+
+thead tr {
+  background-color: var(--color-dark);
+  color: var(--color-white);
+}
+
+thead th {
+  color: var(--color-white);
+  font-weight: 700;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+tbody tr:nth-child(even) {
+  background-color: var(--color-table-alt);
+}
+
+tbody tr:nth-child(odd) {
+  background-color: var(--color-white);
+}
+
+tbody td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ─── Botones ────────────────────────────────────────────── */
+button, .btn {
+  font-family: var(--font-base);
+  font-size: var(--text-base);
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  transition: opacity 0.2s;
+}
+
+button:hover, .btn:hover {
+  opacity: 0.88;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.btn-secondary {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+/* ─── Layouts ────────────────────────────────────────────── */
+main {
+  padding: 24px;
+}
+
+/* ─── Cards ──────────────────────────────────────────────── */
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.card-header {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* ─── Formularios ────────────────────────────────────────── */
+input, select, textarea {
+  font-family: var(--font-base);
+  font-size: var(--text-base);
+  color: var(--color-dark);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+}
+
+label {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-dark);
+  display: block;
+  margin-bottom: 4px;
+}

@@ -1,12 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './features/auth/context/AuthContext'
+import ProtectedRoute from './app/guards/ProtectedRoute'
+import PublicRoute from './app/guards/PublicRoute'
+import { MainLayout } from './app/layouts/MainLayout'
 import MainDashboard from './features/dashboard/pages/mainDashboard'
+import Login from './features/auth/pages/Login'
+import Register from './features/auth/pages/Register'
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainDashboard />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Register />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<MainDashboard />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
