@@ -79,7 +79,7 @@ function Login() {
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography sx={typo.display2}>Bienvenido</Typography>
+            <Typography sx={typo.display2}>Bienvenido al sistema data terceros</Typography>
             <Typography sx={typo.subtitle}>Ingresa tus credenciales para continuar.</Typography>
           </Box>
 
