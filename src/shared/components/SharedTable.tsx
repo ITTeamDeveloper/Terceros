@@ -16,6 +16,7 @@ import {
   Add as AddIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  InboxOutlined as InboxIcon,
   RefreshOutlined as RefreshIcon,
   Search as SearchIcon,
 } from '@mui/icons-material'
@@ -335,6 +336,34 @@ export function SharedTable<T extends object>({
           </TableHead>
 
           <TableBody>
+            {!loading && data.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length + (actions ? 1 : 0)}
+                  sx={{ borderBottom: 'none', py: 6 }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1,
+                      color: '#9C9CA8',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                  >
+                    <InboxIcon sx={{ fontSize: 36, color: '#B19BFD' }} />
+                    <Box sx={{ fontSize: 13, fontWeight: 700, color: '#1D1D1D' }}>
+                      No hay datos para mostrar
+                    </Box>
+                    <Box sx={{ fontSize: 12, color: '#6B6B7A' }}>
+                      Aún no se han registrado resultados.
+                    </Box>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            )}
             {data.map((row, rowIdx) => (
               <TableRow
                 key={rowIdx}
@@ -355,9 +384,14 @@ export function SharedTable<T extends object>({
                       fontFamily: 'Inter, sans-serif',
                     }}
                   >
-                    {col.render
-                      ? col.render(row[col.key], row, page * pageSize + rowIdx + 1)
-                      : String(row[col.key] ?? '')}
+                    {(() => {
+                      const raw = row[col.key]
+                      if (col.render) return col.render(raw, row, page * pageSize + rowIdx + 1)
+                      if (raw === null || raw === undefined || raw === '') {
+                        return <Box sx={{ color: '#9C9CA8' }}>—</Box>
+                      }
+                      return String(raw)
+                    })()}
                   </TableCell>
                 ))}
 

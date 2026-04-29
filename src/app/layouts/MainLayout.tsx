@@ -85,6 +85,7 @@ export function MainLayout() {
               component="img"
               src="/Logo%20Finanty%20blanco.png"
               alt="Finanty"
+              style={{ height: '10rem'}}
               sx={{ height: 26, width: 'auto', display: 'block' }}
             />
           </Box>

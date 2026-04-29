@@ -69,7 +69,7 @@ export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) 
           component="img"
           src="/Logo%20Finanty%20blanco.png"
           alt="Finanty"
-          sx={{ height: 40, width: 'auto', display: 'block' }}
+          sx={{ height: '25rem', width: 'auto', display: 'block' }}
         />
       </Box>
 

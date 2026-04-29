@@ -57,6 +57,8 @@ export function SharedCombobox({
         value={value}
         loading={loading}
         disabled={disabled}
+        noOptionsText="No hay opciones disponibles"
+        loadingText="Cargando..."
         getOptionLabel={(option) => option.data}
         isOptionEqualToValue={(opt, val) => opt.value === val.value}
         onChange={(_, newValue) => {
