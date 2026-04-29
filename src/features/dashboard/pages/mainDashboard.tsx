@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import {
   CloudDownloadOutlined as CloudDownloadIcon,
-  DeleteOutlined as DeleteIcon,
+  // DeleteOutlined as DeleteIcon,
   FilterAltOutlined as FilterIcon,
   LockOutlined as LockIcon,
   LockOpenOutlined as LockOpenIcon,
@@ -167,16 +167,16 @@ function MainDashboard() {
     onClick: handleDescargar,
   }
 
-  const eliminarAction: TableAction<DashboardRow> = {
-    label: 'Eliminar',
-    icon: <DeleteIcon sx={{ fontSize: 18, color: '#B23A3A' }} />,
-    onClick: (row) =>
-      eliminar.abrir({
-        documentoId: row.documentoId,
-        documentoNombre: row.documentoNombre,
-        empresaNombre: row.empresaNombre,
-      }),
-  }
+  // const eliminarAction: TableAction<DashboardRow> = {
+  //   label: 'Eliminar',
+  //   icon: <DeleteIcon sx={{ fontSize: 18, color: '#B23A3A' }} />,
+  //   onClick: (row) =>
+  //     eliminar.abrir({
+  //       documentoId: row.documentoId,
+  //       documentoNombre: row.documentoNombre,
+  //       empresaNombre: row.empresaNombre,
+  //     }),
+  // }
 
   const autorizarAction: TableAction<DashboardRow> = {
     label: (row) => (row.autorizado ? 'Desautorizar' : 'Autorizar'),
@@ -197,7 +197,7 @@ function MainDashboard() {
 
   const columns = isAdmin ? adminColumns : userColumns
   const actions: TableAction<DashboardRow>[] = isAdmin
-    ? [autorizarAction, eliminarAction]
+    ? [autorizarAction /*, eliminarAction*/]
     : [descargarAction]
 
   const intro = isAdmin
