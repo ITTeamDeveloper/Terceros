@@ -6,6 +6,8 @@ import {
   CloudDownloadOutlined as CloudDownloadIcon,
   DeleteOutlined as DeleteIcon,
   FilterAltOutlined as FilterIcon,
+  LockOutlined as LockIcon,
+  LockOpenOutlined as LockOpenIcon,
 } from '@mui/icons-material'
 import { SharedSelect, SharedTable } from '../../../shared/components'
 import { typo } from '../../../shared/styles/typography'
@@ -176,9 +178,26 @@ function MainDashboard() {
       }),
   }
 
+  const autorizarAction: TableAction<DashboardRow> = {
+    label: (row) => (row.autorizado ? 'Desautorizar' : 'Autorizar'),
+    icon: (row) =>
+      row.autorizado ? (
+        <LockIcon sx={{ fontSize: 18, color: '#1B7F3A' }} />
+      ) : (
+        <LockOpenIcon sx={{ fontSize: 18, color: '#B23A3A' }} />
+      ),
+    onClick: (row) =>
+      autorizar.abrir({
+        documentoEmpresaId: row.documentoEmpresaId,
+        autorizado: row.autorizado,
+        documentoNombre: row.documentoNombre,
+        empresaNombre: row.empresaNombre,
+      }),
+  }
+
   const columns = isAdmin ? adminColumns : userColumns
   const actions: TableAction<DashboardRow>[] = isAdmin
-    ? [eliminarAction]
+    ? [autorizarAction, eliminarAction]
     : [descargarAction]
 
   const intro = isAdmin
