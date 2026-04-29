@@ -1,4 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, { type AutocompleteRenderValueGetItemProps } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
@@ -50,8 +50,8 @@ export function SharedCombobox({
           {label}
         </Typography>
       )}
-      <Autocomplete
-        multiple={multiple}
+      <Autocomplete<ComboOption, true, false, false>
+        multiple={multiple as true}
         disableCloseOnSelect={multiple}
         options={options}
         value={value}
@@ -93,9 +93,9 @@ export function SharedCombobox({
             </li>
           )
         }}
-        renderTags={(tagValue, getTagProps) =>
-          tagValue.map((option, index) => {
-            const { key, ...tagProps } = getTagProps({ index })
+        renderValue={(tagValue: ComboOption[], getItemProps: AutocompleteRenderValueGetItemProps<true>) =>
+          tagValue.map((option: ComboOption, index: number) => {
+            const { key, ...tagProps } = getItemProps({ index })
             return (
               <Chip
                 key={key}
