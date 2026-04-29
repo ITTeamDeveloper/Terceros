@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import {
   Close as CloseIcon,
+  LockOpenOutlined as LockOpenIcon,
   UploadFileOutlined as UploadFileIcon,
 } from '@mui/icons-material'
 import { SharedPanel, SharedSelect } from '../../../../shared/components'
@@ -27,9 +28,12 @@ export function DashboardAgregar({
     empresa,
     saving,
     feedback,
+    puedeGuardar,
+    confirmando,
     maxArchivos,
     cerrar,
     guardar,
+    volverAEditar,
     setEmpresa,
     agregarArchivos,
     quitarArchivo,
@@ -42,10 +46,94 @@ export function DashboardAgregar({
       open={open}
       onClose={cerrar}
       onSave={guardar}
-      title="Subir archivo"
+      title={confirmando ? 'Confirmar autorización' : 'Subir archivo'}
       loading={saving}
       feedback={feedback}
+      onCancel={confirmando ? volverAEditar : undefined}
+      cancelLabel={confirmando ? 'Volver' : 'Cancelar'}
+      saveLabel={confirmando ? 'Sí, autorizar' : 'Guardar'}
+      saveDisabled={!puedeGuardar}
     >
+      {confirmando ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              bgcolor: '#F3F0FF',
+              alignSelf: 'center',
+            }}
+          >
+            <LockOpenIcon sx={{ fontSize: 28, color: '#B19BFD' }} />
+          </Box>
+          <Typography
+            sx={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: '#1D1D1D',
+              fontFamily: 'Inter, sans-serif',
+              textAlign: 'center',
+            }}
+          >
+            ¿Estás seguro en autorizar al estudio a ver estos archivos?
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: 12,
+              color: '#6B6B7A',
+              fontFamily: 'Inter, sans-serif',
+              textAlign: 'center',
+            }}
+          >
+            Una vez confirmado, el estudio podrá visualizar y descargar los archivos subidos.
+          </Typography>
+
+          <Box
+            sx={{
+              mt: 1,
+              p: 2,
+              bgcolor: '#F3F0FF',
+              border: '1px solid #EAE5FF',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            <Typography
+              sx={{ fontSize: 12, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
+            >
+              Estudio: <strong>{empresa?.data ?? '—'}</strong>
+            </Typography>
+            <Typography
+              sx={{ fontSize: 12, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
+            >
+              Archivos a autorizar: <strong>{archivos.length}</strong>
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 0.5 }}>
+              {archivos.map((file, i) => (
+                <Typography
+                  key={`${file.name}-${i}`}
+                  sx={{
+                    fontSize: 12,
+                    color: '#1D1D1D',
+                    fontFamily: 'Inter, sans-serif',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  • {file.name}
+                </Typography>
+              ))}
+            </Box>
+          </Box>
+        </Box>
+      ) : (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
         <SharedSelect
           label="Estudio"
@@ -151,6 +239,7 @@ export function DashboardAgregar({
           )}
         </Box>
       </Box>
+      )}
     </SharedPanel>
   )
 }

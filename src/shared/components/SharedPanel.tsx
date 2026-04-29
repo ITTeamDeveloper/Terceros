@@ -26,7 +26,12 @@ export function SharedPanel({
   children,
   loading = false,
   feedback,
+  onCancel,
+  cancelLabel = 'Cancelar',
+  saveLabel = 'Guardar',
+  saveDisabled = false,
 }: SharedPanelProps) {
+  const handleCancel = onCancel ?? onClose
   return (
     <Drawer
       anchor="right"
@@ -106,7 +111,7 @@ export function SharedPanel({
         <Button
           fullWidth
           variant="outlined"
-          onClick={onClose}
+          onClick={handleCancel}
           sx={{
             textTransform: 'none',
             fontWeight: 600,
@@ -117,13 +122,13 @@ export function SharedPanel({
             '&:hover': { borderColor: '#B19BFD', bgcolor: '#F3F0FF' },
           }}
         >
-          Cancelar
+          {cancelLabel}
         </Button>
         <Button
           fullWidth
           variant="contained"
           onClick={onSave}
-          disabled={loading}
+          disabled={loading || saveDisabled}
           sx={{
             textTransform: 'none',
             fontWeight: 700,
@@ -138,7 +143,7 @@ export function SharedPanel({
           {loading ? (
             <CircularProgress size={18} sx={{ color: '#fff' }} />
           ) : (
-            'Guardar'
+            saveLabel
           )}
         </Button>
       </Box>

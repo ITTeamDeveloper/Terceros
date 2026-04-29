@@ -14,4 +14,8 @@ export interface SharedPanelProps {
   children: React.ReactNode
   loading?: boolean
   feedback?: SharedPanelFeedback
+  onCancel?: () => void
+  cancelLabel?: string
+  saveLabel?: string
+  saveDisabled?: boolean
 }

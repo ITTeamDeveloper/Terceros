@@ -13,6 +13,7 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   const [open, setOpen] = useState(false)
   const [archivos, setArchivos] = useState<File[]>([])
   const [empresa, setEmpresa] = useState<ComboOption | null>(null)
+  const [confirmando, setConfirmando] = useState(false)
 
   const empresaId = empresa?.value ?? null
 
@@ -20,6 +21,7 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     setOpen(false)
     setArchivos([])
     setEmpresa(null)
+    setConfirmando(false)
   }
 
   const { feedback, saving, ejecutar } = usePanelFeedback({
@@ -32,6 +34,11 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   const cerrar = () => {
     if (saving) return
     limpiar()
+  }
+
+  const volverAEditar = () => {
+    if (saving) return
+    setConfirmando(false)
   }
 
   const puedeGuardar =
@@ -50,6 +57,10 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
 
   const guardar = () => {
     if (!empresaId || archivos.length === 0) return
+    if (!confirmando) {
+      setConfirmando(true)
+      return
+    }
     void ejecutar(() => documentoServices.subir(archivos, empresaId), {
       successMessage: 'Archivos subidos correctamente',
       errorMessage: 'No se pudieron subir los archivos',
@@ -64,9 +75,11 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     saving,
     feedback,
     puedeGuardar,
+    confirmando,
     maxArchivos: MAX_ARCHIVOS,
     abrir,
     cerrar,
+    volverAEditar,
     setEmpresa,
     agregarArchivos,
     quitarArchivo,
