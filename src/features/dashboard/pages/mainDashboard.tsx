@@ -60,12 +60,12 @@ const adminColumns: ColumnDef<DashboardRow>[] = [
   { label: 'Estudio', key: 'empresaNombre' },
   { label: 'Archivo', key: 'documentoNombre' },
   { label: 'Autorizado', key: 'autorizado', render: (value: boolean) => (value ? 'Sí' : 'No') },
-  { label: 'Fecha', key: 'creadoEn' },
+  { label: 'Fecha Autorizado', key: 'creadoEn' },
 ]
 
 const userColumns: ColumnDef<DashboardRow>[] = [
   { label: 'Archivo', key: 'documentoNombre' },
-  { label: 'Fecha', key: 'fechaSubida' },
+  { label: 'Fecha Autorizado', key: 'fechaSubida' },
 ]
 
 function MainDashboard() {
