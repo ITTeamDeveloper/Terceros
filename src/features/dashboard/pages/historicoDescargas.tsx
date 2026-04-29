@@ -6,8 +6,8 @@ import type { DescargaHistorialResponse } from '../../../services/interfaces'
 import { useHistoricoDescargas } from './customHooks/useHistoricoDescargas'
 
 const columns: ColumnDef<DescargaHistorialResponse>[] = [
-    { label: 'Documento', key: 'documentoNombre' },
-  { label: 'Empresa', key: 'empresa' },
+    { label: 'Archivo', key: 'documentoNombre' },
+  { label: 'Estudio', key: 'empresa' },
   { label: 'Descargado por', key: 'usuario' },
   { label: 'Fecha', key: 'fechaDescarga' },
 ]
@@ -31,8 +31,8 @@ export const HistoricoDescargas = () => {
         <Typography sx={{ ...typo.h2, mb: 0.75 }}>Histórico de descargas</Typography>
         <Typography sx={typo.subtitle}>
           Consulta el registro completo de descargas realizadas en la plataforma. Para cada descarga
-          verás el documento, la empresa a la que pertenece, el usuario que lo descargó y la fecha
-          en que se realizó, lo que te permite auditar el acceso a los documentos.
+          verás el archivo, el estudio al que pertenece, el usuario que lo descargó y la fecha en que
+          se realizó, lo que te permite auditar el acceso a los archivos.
         </Typography>
       </Box>
 
@@ -52,7 +52,7 @@ export const HistoricoDescargas = () => {
           onRefresh={() => load()}
           onSearch={handleSearch}
           onSearchInput={cancelSearch}
-          searchPlaceholder="Buscar por documento ..."
+          searchPlaceholder="Buscar por archivo ..."
           onPageChange={handlePageChange}
           totalItems={total}
         />

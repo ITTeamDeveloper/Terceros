@@ -24,13 +24,13 @@ export function DashboardEliminar({ controller }: DashboardEliminarProps) {
           <Typography
             sx={{ fontSize: 13, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
           >
-            Documento: <strong>{target.documentoNombre}</strong>
+            Archivo: <strong>{target.documentoNombre}</strong>
           </Typography>
           {target.empresaNombre && (
             <Typography
               sx={{ fontSize: 13, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
             >
-              Empresa: <strong>{target.empresaNombre}</strong>
+              Estudio: <strong>{target.empresaNombre}</strong>
             </Typography>
           )}
         </Box>

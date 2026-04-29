@@ -42,14 +42,14 @@ export function DashboardAgregar({
       open={open}
       onClose={cerrar}
       onSave={guardar}
-      title="Subir documento"
+      title="Subir archivo"
       loading={saving}
       feedback={feedback}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
         <SharedSelect
-          label="Empresa"
-          placeholder="Selecciona una empresa"
+          label="Estudio"
+          placeholder="Selecciona un estudio"
           options={empresas}
           value={empresa}
           onChange={setEmpresa}

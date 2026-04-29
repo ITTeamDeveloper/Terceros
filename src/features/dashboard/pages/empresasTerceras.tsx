@@ -8,8 +8,9 @@ import { useEmpresasTerceras } from './customHooks/useEmpresasTerceras'
 import { EmpresasTercerasAgregar } from './components/empresasTercerasAgregar'
 
 const columns: ColumnDef<EmpresaSelectResponse>[] = [
-  { label: '#', key: 'value', render: (_value, _row, index) => index },
-  { label: 'Empresa', key: 'data' },
+  { label: 'Usuario', key: 'usuario' },
+  { label: 'Estudio', key: 'data' },
+  { label: 'Fecha de creación', key: 'fechaCreacion' },
 ]
 
 export const EmpresaTerceras = () => {
@@ -32,9 +33,8 @@ export const EmpresaTerceras = () => {
       <Box sx={{ mb: 2.5, maxWidth: 760 }}>
         <Typography sx={{ ...typo.h2, mb: 0.75 }}>Estudios</Typography>
         <Typography sx={typo.subtitle}>
-          Gestiona las empresas terceras (estudios) registradas en la plataforma. Aquí puedes
-          consultar el listado de estudios disponibles y agregar nuevos para luego asignarles
-          documentos desde la sección de asignaciones.
+          Gestiona los estudios registrados en la plataforma. Consulta el listado disponible y
+          agrega nuevos para luego asignarles archivos desde la sección de asignaciones.
         </Typography>
       </Box>
 
@@ -55,7 +55,7 @@ export const EmpresaTerceras = () => {
           onRefresh={() => load()}
           onSearch={handleSearch}
           onSearchInput={cancelSearch}
-          searchPlaceholder="Buscar por empresa ..."
+          searchPlaceholder="Buscar por estudio ..."
           onPageChange={handlePageChange}
           totalItems={total}
         />

@@ -31,14 +31,14 @@ export function useEliminarDocumento({ onSuccess }: UseEliminarDocumentoArgs = {
     limpiar()
   }
 
-  const titulo = '¿Estás seguro de eliminar este documento?'
+  const titulo = '¿Estás seguro de eliminar este archivo?'
 
   const guardar = () => {
     if (!target?.documentoId) return
     const documentoId = target.documentoId
     void ejecutar(() => documentoServices.eliminar(documentoId), {
-      successMessage: 'Documento eliminado correctamente',
-      errorMessage: 'No se pudo eliminar el documento',
+      successMessage: 'Archivo eliminado correctamente',
+      errorMessage: 'No se pudo eliminar el archivo',
     })
   }
 

@@ -59,6 +59,10 @@ export interface LoginResponse {
 // Documentos
 // ============================================================
 
+export interface IDocumentoListParams extends ITablaParams {
+  empresaId?: string
+}
+
 export interface DocumentoListResponse {
   documentoEmpresaId: string
   documentoId: string
@@ -93,6 +97,8 @@ export interface DocumentoAutorizadoListResponse {
 export interface EmpresaSelectResponse {
   data: string
   value: string
+  fechaCreacion: string
+  usuario: string
 }
 
 export interface EmpresaCrearRequest {

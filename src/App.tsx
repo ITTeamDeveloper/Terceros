@@ -33,7 +33,7 @@ function App() {
                 element={
                   <PlaceholderPage
                     title="Repositorio de archivos"
-                    description="Centraliza todos los documentos enviados a tus terceros con búsqueda y filtros avanzados."
+                    description="Centraliza todos los archivos enviados a tus estudios con búsqueda y filtros avanzados."
                   />
                 }
               />
@@ -48,7 +48,7 @@ function App() {
                 element={
                   <PlaceholderPage
                     title="Flujo de aprobaciones"
-                    description="Revisa y autoriza los documentos pendientes con un flujo jerárquico y trazabilidad por usuario."
+                    description="Revisa y autoriza los archivos pendientes con un flujo jerárquico y trazabilidad por usuario."
                   />
                 }
               />

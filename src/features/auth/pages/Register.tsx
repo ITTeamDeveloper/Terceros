@@ -114,15 +114,15 @@ function Register() {
 
           <AuthTextField
             label="Correo electrónico"
-            placeholder="ejemplo@empresa.com"
+            placeholder="ejemplo@estudio.com"
             icon={<MailOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
             value={email}
             onChange={setEmail}
           />
 
           <AuthTextField
-            label="Empresa / Estudio"
-            placeholder="Nombre del estudio o empresa"
+            label="Estudio"
+            placeholder="Nombre del estudio"
             icon={<BusinessOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
             value={company}
             onChange={setCompany}

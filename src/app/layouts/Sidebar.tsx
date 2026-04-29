@@ -2,19 +2,10 @@ import { NavLink } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import {
-  Settings as SettingsIcon,
-  HelpOutlined as HelpOutlineIcon,
-} from '@mui/icons-material'
 import type { SvgIconComponent } from '@mui/icons-material'
 import { typo, fontFamily } from '../../shared/styles/typography'
 import { useIcons, type IconName } from '../../shared/hooks/useIcons'
 import { useSidebarNav, type NavItem } from './sidebar/useSidebarNav'
-
-const SECONDARY_NAV: NavItem[] = [
-  { label: 'Configuración', path: '/configuracion', icon: SettingsIcon },
-  { label: 'Soporte', path: '/soporte', icon: HelpOutlineIcon },
-]
 
 interface NavRowProps {
   item: NavItem
@@ -123,10 +114,6 @@ export function Sidebar({ expanded }: SidebarProps) {
     >
       {expanded && <SectionLabel>NAVEGACIÓN</SectionLabel>}
       {primaryNav.map((item) => <NavRow key={item.path} item={item} expanded={expanded} />)}
-
-
-      {expanded && <SectionLabel>CUENTA</SectionLabel>}
-      {SECONDARY_NAV.map((item) => <NavRow key={item.path} item={item} expanded={expanded} />)}
     </Box>
   )
 }

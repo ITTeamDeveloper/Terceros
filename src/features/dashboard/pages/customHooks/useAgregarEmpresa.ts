@@ -33,8 +33,8 @@ export function useAgregarEmpresa({ onSuccess }: UseAgregarEmpresaArgs = {}) {
     const nombreLimpio = nombre.trim()
     if (!nombreLimpio) return
     void ejecutar(() => empresasServices.crear({ nombre: nombreLimpio }), {
-      successMessage: 'Empresa agregada correctamente',
-      errorMessage: 'No se pudo agregar la empresa',
+      successMessage: 'Estudio agregado correctamente',
+      errorMessage: 'No se pudo agregar el estudio',
     })
   }
 

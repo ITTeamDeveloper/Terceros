@@ -50,8 +50,8 @@ export function useAutorizarDocumento({ onSuccess }: UseAutorizarDocumentoArgs =
         }),
       {
         successMessage: nuevoEstado
-          ? 'Documento autorizado correctamente'
-          : 'Documento desautorizado correctamente',
+          ? 'Archivo autorizado correctamente'
+          : 'Archivo desautorizado correctamente',
         errorMessage: 'No se pudo actualizar la autorización',
       },
     )

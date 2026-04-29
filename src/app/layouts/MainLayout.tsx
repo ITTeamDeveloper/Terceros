@@ -9,22 +9,9 @@ import {
 } from '@mui/icons-material'
 import { Sidebar } from './Sidebar'
 import { useAuth } from '../../features/auth/context/AuthContext'
-import { typo, fontFamily } from '../../shared/styles/typography'
+import { fontFamily } from '../../shared/styles/typography'
 
 const STORAGE_KEY = 'sidebarExpanded'
-
-function FinantyMark() {
-  return (
-    <Box
-      sx={{
-        width: 18,
-        height: 18,
-        borderRadius: '2px 2px 2px 9px',
-        bgcolor: '#B19BFD',
-      }}
-    />
-  )
-}
 
 export function MainLayout() {
   const { payload, logout } = useAuth()
@@ -66,8 +53,8 @@ export function MainLayout() {
             alignItems: 'center',
             gap: 2,
             px: 4,
-            bgcolor: '#FFFFFF',
-            borderBottom: '1px solid #EAE5FF',
+            bgcolor: '#1D1D1D',
+            borderBottom: '1px solid #2A2A2A',
           }}
         >
           {/* Toggle */}
@@ -80,22 +67,26 @@ export function MainLayout() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: '#F7F4FF',
+              bgcolor: 'rgba(255,255,255,0.06)',
               borderRadius: '10px',
               cursor: 'pointer',
               transition: 'background-color 0.15s',
-              '&:hover': { bgcolor: '#EFEAFF' },
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.12)' },
             }}
           >
             {sidebarExpanded
-              ? <MenuOpenIcon sx={{ fontSize: 20, color: '#1D1D1D' }} />
-              : <MenuIcon sx={{ fontSize: 20, color: '#1D1D1D' }} />}
+              ? <MenuOpenIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+              : <MenuIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />}
           </Box>
 
           {/* Logo */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-            <FinantyMark />
-            <Typography sx={{ ...typo.h1, lineHeight: 1 }}>Finanty</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box
+              component="img"
+              src="/Logo%20Finanty%20blanco.png"
+              alt="Finanty"
+              sx={{ height: 26, width: 'auto', display: 'block' }}
+            />
           </Box>
 
           {/* Spacer */}
@@ -110,8 +101,8 @@ export function MainLayout() {
               gap: 1.25,
               pl: 0.75,
               pr: 1.5,
-              bgcolor: '#F7F4FF',
-              border: '1px solid #EAE5FF',
+              bgcolor: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '12px',
             }}
           >
@@ -131,10 +122,20 @@ export function MainLayout() {
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontFamily: fontFamily.body, fontSize: 12, fontWeight: 700, color: '#1D1D1D', lineHeight: 1.1 }}>
+              <Typography sx={{ fontFamily: fontFamily.body, fontSize: 12, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.1 }}>
                 {name}
               </Typography>
-              <Typography sx={{ ...typo.caption, fontSize: 10, lineHeight: 1.1 }}>{role}</Typography>
+              <Typography
+                sx={{
+                  fontFamily: fontFamily.body,
+                  fontSize: 10,
+                  fontWeight: 500,
+                  color: '#9C9CA8',
+                  lineHeight: 1.1,
+                }}
+              >
+                {role}
+              </Typography>
             </Box>
           </Box>
 
@@ -148,14 +149,14 @@ export function MainLayout() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: '#F7F4FF',
-              border: '1px solid #EAE5FF',
+              bgcolor: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: '10px',
               cursor: 'pointer',
-              '&:hover': { bgcolor: '#EFEAFF' },
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.12)' },
             }}
           >
-            <LogoutIcon sx={{ fontSize: 18, color: '#1D1D1D' }} />
+            <LogoutIcon sx={{ fontSize: 18, color: '#FFFFFF' }} />
           </Box>
         </Box>
 

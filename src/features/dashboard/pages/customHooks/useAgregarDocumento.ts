@@ -51,8 +51,8 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   const guardar = () => {
     if (!empresaId || archivos.length === 0) return
     void ejecutar(() => documentoServices.subir(archivos, empresaId), {
-      successMessage: 'Documentos subidos correctamente',
-      errorMessage: 'No se pudieron subir los documentos',
+      successMessage: 'Archivos subidos correctamente',
+      errorMessage: 'No se pudieron subir los archivos',
     })
   }
 

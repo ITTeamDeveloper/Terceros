@@ -16,7 +16,7 @@ export function EmpresasTercerasAgregar({ controller }: EmpresasTercerasAgregarP
       open={open}
       onClose={cerrar}
       onSave={guardar}
-      title="Agregar empresa tercera"
+      title="Agregar estudio"
       loading={saving}
       feedback={feedback}
     >
@@ -29,7 +29,7 @@ export function EmpresasTercerasAgregar({ controller }: EmpresasTercerasAgregarP
             fontFamily: 'Inter, sans-serif',
           }}
         >
-          Nombre de empresa tercera
+          Nombre del estudio
         </Typography>
         <TextField
           value={nombre}

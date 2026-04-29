@@ -3,7 +3,7 @@ import type {
   AutorizarRequest,
   DocumentoAutorizadoListResponse,
   DocumentoListResponse,
-  ITablaParams,
+  IDocumentoListParams,
   MessageResponse,
   PageResponse,
 } from './interfaces'
@@ -12,6 +12,7 @@ const subir = async (archivos: File[], empresaId: string): Promise<MessageRespon
   const formData = new FormData()
   archivos.forEach((archivo) => formData.append('archivos', archivo))
   formData.append('empresaId', empresaId)
+  formData.append('autorizado', 'true')
 
   const { data } = await api.post<MessageResponse>('/documentos', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -20,7 +21,7 @@ const subir = async (archivos: File[], empresaId: string): Promise<MessageRespon
 }
 
 const listar = async (
-  params: ITablaParams,
+  params: IDocumentoListParams,
   signal?: AbortSignal,
 ): Promise<PageResponse<DocumentoListResponse>> => {
   const { data } = await api.get<PageResponse<DocumentoListResponse>>('/documentos', {
@@ -41,7 +42,7 @@ const autorizar = async (payload: AutorizarRequest): Promise<MessageResponse> =>
 }
 
 const listarAutorizados = async (
-  params: ITablaParams,
+  params: IDocumentoListParams,
   signal?: AbortSignal,
 ): Promise<PageResponse<DocumentoAutorizadoListResponse>> => {
   const { data } = await api.get<PageResponse<DocumentoAutorizadoListResponse>>(

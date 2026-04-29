@@ -40,7 +40,7 @@ export function useEmpresasTerceras() {
       const message =
         axiosErr.response?.data?.message ??
         axiosErr.response?.data?.error ??
-        'No se pudo cargar las empresas terceras'
+        'No se pudieron cargar los estudios'
       setFeedback({ open: true, message, statusCode: status })
     } finally {
       if (!signal.aborted) setLoading(false)

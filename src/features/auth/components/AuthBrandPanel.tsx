@@ -1,6 +1,4 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { fontFamily } from '../../../shared/styles/typography'
 
 const ACCENT_DOTS = ['#B19BFD', '#E3734F', '#F3BB4A', '#456648', '#4574BF', '#E8C8D6']
 
@@ -66,26 +64,12 @@ export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) 
       />
 
       {/* Logo */}
-      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 1.75, px: 6, pt: 6 }}>
-        <Typography
-          sx={{
-            fontFamily: fontFamily.display,
-            fontSize: 32,
-            fontWeight: 400,
-            color: '#FFFFFF',
-            letterSpacing: '-0.02em',
-            lineHeight: 1,
-          }}
-        >
-          Finanty
-        </Typography>
+      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', px: 6, pt: 6 }}>
         <Box
-          sx={{
-            width: 24,
-            height: 24,
-            borderRadius: '4px 4px 4px 12px',
-            bgcolor: '#B19BFD',
-          }}
+          component="img"
+          src="/Logo%20Finanty%20blanco.png"
+          alt="Finanty"
+          sx={{ height: 40, width: 'auto', display: 'block' }}
         />
       </Box>
 
