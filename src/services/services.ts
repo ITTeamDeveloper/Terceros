@@ -9,7 +9,7 @@ import axios, {
 // Conexión
 // ============================================================
 
-export const API_BASE_URL = "https://apqatercerosdata.finanty.com:9303/api"
+export const API_BASE_URL = "https://api-tercerosdata.finanty.com:9303/api"
 
 const TOKEN_KEY = 'authToken'
 
