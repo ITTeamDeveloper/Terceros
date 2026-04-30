@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Box,
   Button,
@@ -9,35 +8,173 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Tooltip,
 } from '@mui/material'
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material'
+import {
+  Add as AddIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  InboxOutlined as InboxIcon,
+  RefreshOutlined as RefreshIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material'
 import { useTableControls } from '../hooks/useTableControls'
 import type { SharedTableProps } from '../types/table.types'
+import { typo } from '../styles/typography'
+
+/**
+ * Devuelve la ventana de páginas a mostrar (con elipsis cuando hay muchas).
+ */
+function pagesWindow(current: number, total: number): (number | 'ellipsis')[] {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+  const out: (number | 'ellipsis')[] = []
+  const left = Math.max(2, current - 1)
+  const right = Math.min(total - 1, current + 1)
+  out.push(1)
+  if (left > 2) out.push('ellipsis')
+  for (let i = left; i <= right; i++) out.push(i)
+  if (right < total - 1) out.push('ellipsis')
+  out.push(total)
+  return out
+}
+
+interface TablePagerProps {
+  page: number
+  pageSize: number
+  totalItems: number
+  onChange: (page: number) => void
+}
+
+function TablePager({ page, pageSize, totalItems, onChange }: TablePagerProps) {
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+  const current = page + 1
+  const win = pagesWindow(current, totalPages)
+  const prevDisabled = current <= 1
+  const nextDisabled = current >= totalPages
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 2,
+        px: '22px',
+        height: 56,
+        borderTop: '1px solid #F0EBFF',
+      }}
+    >
+      <Box sx={typo.caption}>
+        Página {current} de {totalPages}
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+        {/* Prev */}
+        <Box
+          onClick={() => !prevDisabled && onChange(current - 2)}
+          sx={{
+            width: 28,
+            height: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '6px',
+            bgcolor: '#F7F4FF',
+            color: '#1D1D1D',
+            cursor: prevDisabled ? 'not-allowed' : 'pointer',
+            opacity: prevDisabled ? 0.4 : 1,
+            transition: 'background-color 0.15s',
+            '&:hover': { bgcolor: prevDisabled ? '#F7F4FF' : '#EFEAFF' },
+          }}
+        >
+          <ChevronLeftIcon sx={{ fontSize: 16 }} />
+        </Box>
+
+        {/* Pages */}
+        {win.map((p, i) => {
+          if (p === 'ellipsis') {
+            return (
+              <Box
+                key={`e${i}`}
+                sx={{ ...typo.caption, width: 22, textAlign: 'center', color: '#9C9CA8' }}
+              >
+                …
+              </Box>
+            )
+          }
+          const active = p === current
+          return (
+            <Box
+              key={p}
+              onClick={() => !active && onChange(p - 1)}
+              sx={{
+                ...typo.caption,
+                width: 28,
+                height: 28,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '6px',
+                fontWeight: active ? 700 : 600,
+                color: '#1D1D1D',
+                bgcolor: active ? '#B19BFD' : 'transparent',
+                cursor: active ? 'default' : 'pointer',
+                transition: 'background-color 0.15s',
+                '&:hover': { bgcolor: active ? '#B19BFD' : '#F7F4FF' },
+              }}
+            >
+              {p}
+            </Box>
+          )
+        })}
+
+        {/* Next */}
+        <Box
+          onClick={() => !nextDisabled && onChange(current)}
+          sx={{
+            width: 28,
+            height: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '6px',
+            bgcolor: '#1D1D1D',
+            color: '#B19BFD',
+            cursor: nextDisabled ? 'not-allowed' : 'pointer',
+            opacity: nextDisabled ? 0.35 : 1,
+            transition: 'background-color 0.15s',
+            '&:hover': { bgcolor: nextDisabled ? '#1D1D1D' : '#000000' },
+          }}
+        >
+          <ChevronRightIcon sx={{ fontSize: 16 }} />
+        </Box>
+      </Box>
+    </Box>
+  )
+}
 
 export function SharedTable<T extends object>({
   columns,
   data,
   actions,
   onSearch,
+  onSearchInput,
+  searchPlaceholder = 'Buscar...',
   onPageChange,
   totalItems,
   loading = false,
   onAdd,
   addLabel = 'Agregar',
+  onRefresh,
+  title,
+  maxBodyHeight = 'calc(100vh - 260px)',
 }: SharedTableProps<T>) {
   const { searchTerm, page, pageSize, handleSearchChange, handlePageChange } =
-    useTableControls(onSearch)
+    useTableControls(onSearch, onSearchInput)
 
-  function onRowsPerPageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    handlePageChange(0, parseInt(e.target.value, 10))
-    onPageChange?.(0, parseInt(e.target.value, 10))
-  }
-
-  function onPageChangeMUI(_: unknown, newPage: number) {
+  function goToPage(newPage: number) {
     handlePageChange(newPage, pageSize)
     onPageChange?.(newPage, pageSize)
   }
@@ -59,21 +196,23 @@ export function SharedTable<T extends object>({
         }}
       >
         <Box sx={{ fontWeight: 700, fontSize: 14, color: '#B19BFD', flex: 1 }}>
-          Detalle de Asignaciones
+          {title}
         </Box>
 
         {onSearch && (
           <TextField
             size="small"
-            placeholder="Buscar estudio..."
+            placeholder={searchPlaceholder}
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: 16, color: '#999' }} />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 16, color: '#999' }} />
+                  </InputAdornment>
+                ),
+              },
             }}
             sx={{
               width: 220,
@@ -89,6 +228,27 @@ export function SharedTable<T extends object>({
           />
         )}
 
+        {onRefresh && (
+          <Tooltip title="Actualizar">
+            <span>
+              <IconButton
+                onClick={onRefresh}
+                disabled={loading}
+                sx={{
+                  height: 34,
+                  width: 34,
+                  bgcolor: '#F3F0FF',
+                  borderRadius: '6px',
+                  color: '#1D1D1D',
+                  '&:hover': { bgcolor: '#EDE9FE' },
+                }}
+              >
+                <RefreshIcon sx={{ fontSize: 18, color: '#B19BFD' }} />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+
         {onAdd && (
           <Button
             onClick={onAdd}
@@ -100,7 +260,7 @@ export function SharedTable<T extends object>({
               color: '#FFFFFF',
               fontWeight: 700,
               fontSize: 12,
-              fontFamily: 'Calibri, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               borderRadius: '6px',
               textTransform: 'none',
               boxShadow: 'none',
@@ -113,7 +273,7 @@ export function SharedTable<T extends object>({
       </Box>
 
       {/* Tabla */}
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', maxHeight: maxBodyHeight, overflow: 'auto' }}>
         {loading && (
           <Box
             sx={{
@@ -143,7 +303,11 @@ export function SharedTable<T extends object>({
                     px: 2,
                     py: 1.25,
                     borderBottom: '2px solid #B19BFD',
-                    fontFamily: 'Calibri, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
+                    bgcolor: '#1D1D1D',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1,
                   }}
                 >
                   {col.label}
@@ -158,7 +322,11 @@ export function SharedTable<T extends object>({
                     px: 2,
                     py: 1.25,
                     borderBottom: '2px solid #B19BFD',
-                    fontFamily: 'Calibri, sans-serif',
+                    fontFamily: 'Inter, sans-serif',
+                    bgcolor: '#1D1D1D',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1,
                   }}
                 >
                   Acciones
@@ -168,6 +336,34 @@ export function SharedTable<T extends object>({
           </TableHead>
 
           <TableBody>
+            {!loading && data.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length + (actions ? 1 : 0)}
+                  sx={{ borderBottom: 'none', py: 6 }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 1,
+                      color: '#9C9CA8',
+                      fontFamily: 'Inter, sans-serif',
+                    }}
+                  >
+                    <InboxIcon sx={{ fontSize: 36, color: '#B19BFD' }} />
+                    <Box sx={{ fontSize: 13, fontWeight: 700, color: '#1D1D1D' }}>
+                      No hay datos para mostrar
+                    </Box>
+                    <Box sx={{ fontSize: 12, color: '#6B6B7A' }}>
+                      Aún no se han registrado resultados.
+                    </Box>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            )}
             {data.map((row, rowIdx) => (
               <TableRow
                 key={rowIdx}
@@ -185,12 +381,17 @@ export function SharedTable<T extends object>({
                       py: 1,
                       borderBottom: '1px solid #EEEEEE',
                       color: '#1D1D1D',
-                      fontFamily: 'Calibri, sans-serif',
+                      fontFamily: 'Inter, sans-serif',
                     }}
                   >
-                    {col.render
-                      ? col.render(row[col.key], row)
-                      : String(row[col.key] ?? '')}
+                    {(() => {
+                      const raw = row[col.key]
+                      if (col.render) return col.render(raw, row, page * pageSize + rowIdx + 1)
+                      if (raw === null || raw === undefined || raw === '') {
+                        return <Box sx={{ color: '#9C9CA8' }}>—</Box>
+                      }
+                      return String(raw)
+                    })()}
                   </TableCell>
                 ))}
 
@@ -235,21 +436,11 @@ export function SharedTable<T extends object>({
       </Box>
 
       {showPagination && (
-        <TablePagination
-          component="div"
-          count={totalItems!}
+        <TablePager
           page={page}
-          rowsPerPage={pageSize}
-          onPageChange={onPageChangeMUI}
-          onRowsPerPageChange={onRowsPerPageChange}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          labelRowsPerPage="Filas:"
-          sx={{
-            fontSize: 12,
-            borderTop: '1px solid #EEEEEE',
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
-              { fontSize: 12 },
-          }}
+          pageSize={pageSize}
+          totalItems={totalItems!}
+          onChange={goToPage}
         />
       )}
     </Box>

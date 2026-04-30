@@ -1,4 +1,21 @@
 // ============================================================
+// Tabla
+// ============================================================
+
+export interface ITablaParams {
+  search?: string
+  skip?: number
+  take?: number
+}
+
+export interface PageResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  pages: number
+}
+
+// ============================================================
 // JWT
 // ============================================================
 
@@ -42,14 +59,19 @@ export interface LoginResponse {
 // Documentos
 // ============================================================
 
+export interface IDocumentoListParams extends ITablaParams {
+  empresaId?: string
+}
+
 export interface DocumentoListResponse {
-  documentoId: string
   documentoEmpresaId: string
+  documentoId: string
   empresaId: string
   empresaNombre: string
   documentoNombre: string
   urlDescarga: string
   autorizado: boolean
+  fechaCreacion: string; 
 }
 
 export interface AutorizarRequest {
@@ -57,17 +79,51 @@ export interface AutorizarRequest {
   autorizado: boolean
 }
 
-export interface DocumentoAutorizadoResponse {
+export interface DocumentoAutorizadoListResponse {
+  documentoEmpresaId: string
   documentoId: string
+  empresaId: string
+  empresaNombre: string
   nombre: string
-  urlDescarga: string
+  urlDescarga: string | null
+  autorizado: boolean
+  fechaSubida:  string; 
 }
 
 // ============================================================
 // Empresas
 // ============================================================
 
-export interface EmpresaComboResponse {
+export interface EmpresaSelectResponse {
   data: string
   value: string
+  fechaCreacion: string
+  usuario: string
+}
+
+export interface EmpresaCrearRequest {
+  nombre: string
+}
+
+// ============================================================
+// Descarga Historiales
+// ============================================================
+
+export interface DescargaHistorialResponse {
+  descargaHistorialId: string
+  documentoNombre: string
+  usuario: string
+  empresa: string
+  fechaDescarga: string
+}
+
+// ============================================================
+// Sidebar
+// ============================================================
+
+export interface SidebarItem {
+  sidebarId: string
+  nombre: string
+  url: string
+  icon: string
 }

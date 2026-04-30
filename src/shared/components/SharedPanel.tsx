@@ -1,3 +1,5 @@
+import Alert from '@mui/material/Alert'
+import type { AlertColor } from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -8,6 +10,14 @@ import Typography from '@mui/material/Typography'
 import { Close as CloseIcon } from '@mui/icons-material'
 import type { SharedPanelProps } from '../types/panel.types'
 
+function severityFromStatus(status?: number): AlertColor {
+  if (!status) return 'info'
+  if (status >= 500) return 'error'
+  if (status >= 400) return 'warning'
+  if (status >= 300) return 'info'
+  return 'success'
+}
+
 export function SharedPanel({
   open,
   onClose,
@@ -15,7 +25,13 @@ export function SharedPanel({
   title,
   children,
   loading = false,
+  feedback,
+  onCancel,
+  cancelLabel = 'Cancelar',
+  saveLabel = 'Guardar',
+  saveDisabled = false,
 }: SharedPanelProps) {
+  const handleCancel = onCancel ?? onClose
   return (
     <Drawer
       anchor="right"
@@ -49,7 +65,7 @@ export function SharedPanel({
             fontWeight: 700,
             fontSize: 16,
             color: '#1D1D1D',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
           }}
         >
           {title}
@@ -68,6 +84,18 @@ export function SharedPanel({
         {children}
       </Box>
 
+      {feedback?.open && (
+        <Box sx={{ px: 3, pb: 2 }}>
+          <Alert
+            severity={severityFromStatus(feedback.statusCode)}
+            variant="filled"
+            sx={{ fontSize: 12, fontFamily: 'Inter, sans-serif' }}
+          >
+            {feedback.message}
+          </Alert>
+        </Box>
+      )}
+
       {/* Footer fijo */}
       <Divider />
       <Box
@@ -83,30 +111,30 @@ export function SharedPanel({
         <Button
           fullWidth
           variant="outlined"
-          onClick={onClose}
+          onClick={handleCancel}
           sx={{
             textTransform: 'none',
             fontWeight: 600,
             fontSize: 13,
             borderColor: '#EEEEEE',
             color: '#1D1D1D',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             '&:hover': { borderColor: '#B19BFD', bgcolor: '#F3F0FF' },
           }}
         >
-          Cancelar
+          {cancelLabel}
         </Button>
         <Button
           fullWidth
           variant="contained"
           onClick={onSave}
-          disabled={loading}
+          disabled={loading || saveDisabled}
           sx={{
             textTransform: 'none',
             fontWeight: 700,
             fontSize: 13,
             bgcolor: '#B19BFD',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             boxShadow: 'none',
             '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
             '&.Mui-disabled': { bgcolor: '#D4C8FE', color: '#fff' },
@@ -115,7 +143,7 @@ export function SharedPanel({
           {loading ? (
             <CircularProgress size={18} sx={{ color: '#fff' }} />
           ) : (
-            'Guardar'
+            saveLabel
           )}
         </Button>
       </Box>

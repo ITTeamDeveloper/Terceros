@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { SharedPanel } from '../../../../shared/components'
-import type { useAutorizarDocumento } from '../customHooks/useAutorizarDocumento'
+import type { useEliminarDocumento } from '../customHooks/useEliminarDocumento'
 
-interface DashboardAutorizarProps {
-  controller: ReturnType<typeof useAutorizarDocumento>
+interface DashboardEliminarProps {
+  controller: ReturnType<typeof useEliminarDocumento>
 }
 
-export function DashboardAutorizar({ controller }: DashboardAutorizarProps) {
+export function DashboardEliminar({ controller }: DashboardEliminarProps) {
   const { open, target, titulo, saving, feedback, cerrar, guardar } = controller
 
   return (
@@ -26,11 +26,13 @@ export function DashboardAutorizar({ controller }: DashboardAutorizarProps) {
           >
             Archivo: <strong>{target.documentoNombre}</strong>
           </Typography>
-          <Typography
-            sx={{ fontSize: 13, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
-          >
-            Estudio: <strong>{target.empresaNombre}</strong>
-          </Typography>
+          {target.empresaNombre && (
+            <Typography
+              sx={{ fontSize: 13, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
+            >
+              Estudio: <strong>{target.empresaNombre}</strong>
+            </Typography>
+          )}
         </Box>
       )}
     </SharedPanel>

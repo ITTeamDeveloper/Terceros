@@ -1,4 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, { type AutocompleteRenderValueGetItemProps } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
@@ -43,20 +43,22 @@ export function SharedCombobox({
             fontSize: 12,
             fontWeight: 700,
             color: '#1D1D1D',
-            fontFamily: 'Calibri, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             mb: 1,
           }}
         >
           {label}
         </Typography>
       )}
-      <Autocomplete
-        multiple={multiple}
+      <Autocomplete<ComboOption, true, false, false>
+        multiple={multiple as true}
         disableCloseOnSelect={multiple}
         options={options}
         value={value}
         loading={loading}
         disabled={disabled}
+        noOptionsText="No hay opciones disponibles"
+        loadingText="Cargando..."
         getOptionLabel={(option) => option.data}
         isOptionEqualToValue={(opt, val) => opt.value === val.value}
         onChange={(_, newValue) => {
@@ -84,16 +86,16 @@ export function SharedCombobox({
                 />
               )}
               <Typography
-                sx={{ fontSize: 12, fontFamily: 'Calibri, sans-serif', color: '#1D1D1D' }}
+                sx={{ fontSize: 12, fontFamily: 'Inter, sans-serif', color: '#1D1D1D' }}
               >
                 {option.data}
               </Typography>
             </li>
           )
         }}
-        renderTags={(tagValue, getTagProps) =>
-          tagValue.map((option, index) => {
-            const { key, ...tagProps } = getTagProps({ index })
+        renderValue={(tagValue: ComboOption[], getItemProps: AutocompleteRenderValueGetItemProps<true>) =>
+          tagValue.map((option: ComboOption, index: number) => {
+            const { key, ...tagProps } = getItemProps({ index })
             return (
               <Chip
                 key={key}
@@ -106,8 +108,8 @@ export function SharedCombobox({
                   borderRadius: '4px',
                   height: 22,
                   '& .MuiChip-label': {
-                    fontFamily: 'Calibri, sans-serif',
-                    fontSize: 12,
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 10,
                     fontWeight: 500,
                     px: 1,
                   },
@@ -126,7 +128,7 @@ export function SharedCombobox({
             sx={{
               '& .MuiOutlinedInput-root': {
                 fontSize: 12,
-                fontFamily: 'Calibri, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 borderRadius: '6px',
                 bgcolor: '#FFFFFF',
                 py: '4px !important',
@@ -139,7 +141,7 @@ export function SharedCombobox({
               },
               '& .MuiAutocomplete-input': {
                 fontSize: 12,
-                fontFamily: 'Calibri, sans-serif',
+                fontFamily: 'Inter, sans-serif',
                 py: '2px !important',
                 minWidth: '40px !important',
               },
@@ -149,7 +151,7 @@ export function SharedCombobox({
         slotProps={{
           paper: {
             sx: {
-              fontFamily: 'Calibri, sans-serif',
+              fontFamily: 'Inter, sans-serif',
               borderRadius: '6px',
               boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
             },

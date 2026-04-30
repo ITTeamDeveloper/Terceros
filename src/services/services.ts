@@ -9,7 +9,7 @@ import axios, {
 // Conexión
 // ============================================================
 
-export const API_BASE_URL = "http://localhost:8082/api"
+export const API_BASE_URL = "https://apqatercerosdata.finanty.com:9303/api"
 
 const TOKEN_KEY = 'authToken'
 
@@ -42,10 +42,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError<{ message?: string; error?: string }>) => {
+    if (axios.isCancel(error)) {
+      return Promise.reject(error)
+    }
+
     const url = error.config?.url ?? ''
     const isAuthEndpoint = url.includes('/auth/')
+    const status = error.response?.status
 
-    if (isAuthEndpoint) {
+    if (isAuthEndpoint || status !== 401) {
       return Promise.reject(error)
     }
 

@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { MailOutlined as MailOutlinedIcon } from '@mui/icons-material'
+import {
+  MailOutlined as MailOutlinedIcon,
+  ArrowForward as ArrowForwardIcon,
+} from '@mui/icons-material'
 import { AxiosError } from 'axios'
 import { AuthBrandPanel } from '../components/AuthBrandPanel'
 import { AuthTextField, AuthPasswordField } from '../components/AuthInputs'
 import { useAuth } from '../context/AuthContext'
 import { authServices } from '../../../services/authServices'
 import { AppMessage } from '../../../shared/components'
+import { typo } from '../../../shared/styles/typography'
 
 interface MessageState {
   open: boolean
@@ -53,88 +56,78 @@ function Login() {
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AuthBrandPanel />
 
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#F3F0FF' }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#F7F4FF',
+          p: 5,
+        }}
+      >
         <Box
           sx={{
-            width: 400,
+            width: 440,
             bgcolor: '#FFFFFF',
-            borderRadius: '12px',
-            p: 5,
-            boxShadow: '0 4px 24px rgba(177,155,253,0.13)',
+            borderRadius: '18px',
+            p: '44px 40px 40px 40px',
+            boxShadow: '0 18px 48px rgba(139, 108, 251, 0.12)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 3,
+            gap: 2.75,
           }}
         >
-          <Box>
-            <Typography sx={{ fontWeight: 700, fontSize: 24, color: '#1D1D1D', fontFamily: 'Calibri, sans-serif' }}>
-              Bienvenido
-            </Typography>
-            <Typography sx={{ fontSize: 13, color: '#888888', mt: 0.75, fontFamily: 'Calibri, sans-serif' }}>
-              Ingresa tus credenciales para continuar
-            </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography sx={typo.display2}>Bienvenido al sistema data terceros</Typography>
+            <Typography sx={typo.subtitle}>Ingresa tus credenciales para continuar.</Typography>
           </Box>
 
           <AuthTextField
             label="Correo electrónico"
-            placeholder="ejemplo@empresa.com"
-            icon={<MailOutlinedIcon sx={{ fontSize: 16, color: '#BBBBBB' }} />}
+            placeholder="ejemplo@estudio.com"
+            icon={<MailOutlinedIcon sx={{ fontSize: 16, color: '#8B6CFB' }} />}
             value={email}
             onChange={setEmail}
           />
 
-          <Box>
-            <AuthPasswordField
-              label="Contraseña"
-              value={password}
-              onChange={setPassword}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.75 }}>
-              <Typography sx={{ fontSize: 12, color: '#B19BFD', cursor: 'pointer', fontFamily: 'Calibri, sans-serif' }}>
-                ¿Olvidaste tu contraseña?
-              </Typography>
-            </Box>
-          </Box>
+          <AuthPasswordField
+            label="Contraseña"
+            value={password}
+            onChange={setPassword}
+          />
 
           <Button
             fullWidth
             onClick={handleSubmit}
             disabled={loading}
+            endIcon={!loading && <ArrowForwardIcon sx={{ fontSize: 16, color: '#B19BFD' }} />}
             sx={{
-              height: 46,
-              bgcolor: '#B19BFD',
+              ...typo.buttonLg,
+              height: 50,
+              bgcolor: '#1D1D1D',
               color: '#FFFFFF',
-              fontWeight: 700,
-              fontSize: 14,
-              fontFamily: 'Calibri, sans-serif',
-              borderRadius: '6px',
-              textTransform: 'none',
-              boxShadow: 'none',
-              '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
-              '&.Mui-disabled': { bgcolor: '#D7CCFE', color: '#FFFFFF' },
+              borderRadius: '12px',
+              boxShadow: '0 8px 18px rgba(29,29,29,0.20)',
+              '&:hover': { bgcolor: '#000000', boxShadow: '0 8px 18px rgba(29,29,29,0.28)' },
+              '&.Mui-disabled': { bgcolor: '#3A3A3A', color: '#FFFFFF' },
             }}
           >
             {loading ? 'Ingresando...' : 'Ingresar'}
           </Button>
-
+{/* 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ flex: 1, height: 1, bgcolor: '#EEEEEE' }} />
-            <Typography sx={{ fontSize: 12, color: '#AAAAAA', fontFamily: 'Calibri, sans-serif' }}>o</Typography>
-            <Box sx={{ flex: 1, height: 1, bgcolor: '#EEEEEE' }} />
-          </Box>
+            <Box sx={{ flex: 1, height: 1, bgcolor: '#EAE5FF' }} />
+            <Typography sx={{ ...typo.caption, color: '#9C9CA8' }}>o</Typography>
+            <Box sx={{ flex: 1, height: 1, bgcolor: '#EAE5FF' }} />
+          </Box> */}
 
-          <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: 12, color: '#888888', fontFamily: 'Calibri, sans-serif' }}>
-              ¿No tienes cuenta?
-            </Typography>
-            <Typography
-              component={Link}
-              to="/registro"
-              sx={{ fontSize: 12, fontWeight: 700, color: '#B19BFD', fontFamily: 'Calibri, sans-serif', textDecoration: 'none' }}
-            >
+          {/* <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', alignItems: 'center' }}>
+            <Typography sx={typo.caption}>¿No tienes cuenta?</Typography>
+            <Typography component={Link} to="/registro" sx={typo.link}>
               Regístrate
             </Typography>
-          </Box>
+          </Box> */}
         </Box>
       </Box>
 
