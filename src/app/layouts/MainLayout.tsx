@@ -38,7 +38,7 @@ export function MainLayout() {
       .toUpperCase() || '?'
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F7F4FF' }}>
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', bgcolor: '#F7F4FF' }}>
       <Sidebar expanded={sidebarExpanded} />
 
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -53,7 +53,7 @@ export function MainLayout() {
             alignItems: 'center',
             gap: 2,
             px: 4,
-            bgcolor: '#1D1D1D',
+            bgcolor: '#eae6db',
             borderBottom: '1px solid #2A2A2A',
           }}
         >
@@ -70,24 +70,43 @@ export function MainLayout() {
               bgcolor: 'rgba(255,255,255,0.06)',
               borderRadius: '10px',
               cursor: 'pointer',
+              marginRight: 4,
               transition: 'background-color 0.15s',
               '&:hover': { bgcolor: 'rgba(255,255,255,0.12)' },
             }}
           >
             {sidebarExpanded
-              ? <MenuOpenIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
-              : <MenuIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />}
+              ? <MenuOpenIcon sx={{ fontSize: 20, color: '#000000' }} />
+              : <MenuIcon sx={{ fontSize: 20, color: '#000000' }} />}
           </Box>
 
           {/* Logo */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center' }}>
             <Box
               component="img"
-              src="/Logo%20Finanty%20blanco.png"
+              src="/isotipo.png"
               alt="Finanty"
-              style={{ height: '10rem'}}
-              sx={{ height: 26, width: 'auto', display: 'block' }}
+              sx={{
+                height: '2.3rem',
+                width: 'auto',
+                paddingRight: 1,
+                display: 'block',
+                borderRight: '2px solid white',
+                marginRight: '1.5rem'
+              }}
             />
+            <Typography
+              sx={{
+                fontFamily: 'sans-serif',
+                color: '#000000',
+                fontSize: '1.55rem',
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Terceros
+            </Typography>
           </Box>
 
           {/* Spacer */}
@@ -123,7 +142,7 @@ export function MainLayout() {
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontFamily: fontFamily.body, fontSize: 12, fontWeight: 700, color: '#FFFFFF', lineHeight: 1.1 }}>
+              <Typography sx={{ fontFamily: fontFamily.body, fontSize: 12, fontWeight: 700, color: '#000000', lineHeight: 1.1 }}>
                 {name}
               </Typography>
               <Typography
@@ -150,19 +169,27 @@ export function MainLayout() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              bgcolor: '#B19BFD',
+              border: '#B19BFD',
               borderRadius: '10px',
               cursor: 'pointer',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.12)' },
+              '&:hover': { bgcolor: '#456648' },
             }}
           >
-            <LogoutIcon sx={{ fontSize: 18, color: '#FFFFFF' }} />
+            <LogoutIcon sx={{ fontSize: 18, color: '#000000' }} />
           </Box>
         </Box>
 
         {/* Page content */}
-        <Box component="main" sx={{ flex: 1, overflow: 'auto' }}>
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            overflowX: 'hidden',
+            overflowY: 'auto',
+          }}
+        >
           <Outlet />
         </Box>
       </Box>

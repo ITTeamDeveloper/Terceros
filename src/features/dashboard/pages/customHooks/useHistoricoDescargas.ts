@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { AxiosError } from 'axios'
-import { descargaHistorialServices } from '../../../../services/descargaHistorialServices'
 import type {
   DescargaHistorialResponse,
   ITablaParams,
 } from '../../../../services/interfaces'
+import { historialDeDescargas } from '../../../../services/historialDescargaServices'
 
 interface FeedbackState {
   open: boolean
@@ -29,7 +29,7 @@ export function useHistoricoDescargas() {
 
     setLoading(true)
     try {
-      const res = await descargaHistorialServices.listar(params, signal)
+      const res = await historialDeDescargas.listar(params, signal)
       if (signal.aborted) return
       setData(res.data)
       setTotal(res.total)

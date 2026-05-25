@@ -1,33 +1,24 @@
 import { useEffect, useState } from 'react'
-import type { SvgIconComponent } from '@mui/icons-material'
+import type { SidebarItem } from '../../../services/interfaces'
 import { sidebarServices } from '../../../services/sidebarServices'
-import type { IconName } from '../../../shared/hooks/useIcons'
 
-export interface NavItem {
-  label: string
-  path: string
-  icon: IconName | SvgIconComponent
-}
 
 export function useSidebarNav() {
-  const [primaryNav, setPrimaryNav] = useState<NavItem[]>([])
-
+  const [primaryNav, setPrimaryNav] = useState<SidebarItem[]>([])
+  
+  const fetchSidebarItems = async () => {
+    try {
+      const items = await sidebarServices.listar()
+      setPrimaryNav(items)
+    } catch (error) {
+      console.error('Error fetching sidebar items:', error)
+    }
+  }
   useEffect(() => {
-    const ctrl = new AbortController()
-    sidebarServices
-      .listar(ctrl.signal)
-      .then((items) => {
-        setPrimaryNav(
-          items.map((item) => ({
-            label: item.nombre,
-            path: item.url,
-            icon: item.icon as IconName,
-          })),
-        )
-      })
-      .catch(() => {})
-    return () => ctrl.abort()
+    fetchSidebarItems()
   }, [])
+
+  console.log('Sidebar items:', primaryNav)
 
   return { primaryNav }
 }

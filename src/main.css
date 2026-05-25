@@ -13,7 +13,7 @@
 
   /* Paleta viva (acentos secundarios) */
   --c-green:          #456648;
-  --c-orange:         #E3734F;
+  --c-orange:         #eae6db;
   --c-yellow:         #F3BB4A;
   --c-blue:           #4574BF;
   --c-pink:           #E8C8D6;
@@ -31,7 +31,7 @@
 
   /* Tipografía */
   --font-display:     'Fraunces', 'Recoleta', Georgia, serif;
-  --font-body:        'Inter', 'Lota Grotesque', system-ui, sans-serif;
+  font-body:        'Inter', 'Lota Grotesque', system-ui, sans-serif;
 
   /* Sombras */
   --shadow-sm:        0 2px 6px rgba(29,29,29,0.06);

@@ -7,7 +7,6 @@ import MainDashboard from './features/dashboard/pages/mainDashboard'
 import Login from './features/auth/pages/Login'
 import { PlaceholderPage } from './shared/pages/PlaceholderPage'
 import { HistoricoDescargas } from './features/dashboard/pages/historicoDescargas'
-import { EmpresaTerceras } from './features/dashboard/pages/empresasTerceras'
 
 function App() {
   return (
@@ -21,43 +20,11 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<MainDashboard />} />
+
               <Route
-                path="/estudios"
-                element={
-                  <EmpresaTerceras/>
-                }
-              />
-              <Route
-                path="/archivos"
-                element={
-                  <PlaceholderPage
-                    title="Repositorio de archivos"
-                    description="Centraliza todos los archivos enviados a tus estudios con búsqueda y filtros avanzados."
-                  />
-                }
-              />
-              <Route
-                path="/historicoDescargas"
+                path="/historico"
                 element={
                   <HistoricoDescargas/>
-                }
-              />
-              <Route
-                path="/aprobaciones"
-                element={
-                  <PlaceholderPage
-                    title="Flujo de aprobaciones"
-                    description="Revisa y autoriza los archivos pendientes con un flujo jerárquico y trazabilidad por usuario."
-                  />
-                }
-              />
-              <Route
-                path="/configuracion"
-                element={
-                  <PlaceholderPage
-                    title="Configuración"
-                    description="Define usuarios, roles y permisos del flujo de cobranza con tus terceros."
-                  />
                 }
               />
               <Route

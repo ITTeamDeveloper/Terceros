@@ -10,12 +10,12 @@ const listar = async (
   signal?: AbortSignal,
 ): Promise<PageResponse<DescargaHistorialResponse>> => {
   const { data } = await api.get<PageResponse<DescargaHistorialResponse>>(
-    '/descarga-historiales',
+    '/cliente/historial',
     { params, signal },
   )
   return data
 }
 
-export const descargaHistorialServices = {
+export const historialDeDescargas = {
   listar,
 }

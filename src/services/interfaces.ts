@@ -34,19 +34,8 @@ export interface JwtPayload {
 // Auth
 // ============================================================
 
-export interface RegisterRequest {
-  nombre: string
-  apellido: string
-  email: string
-  password: string
-}
-
-export interface MessageResponse {
-  message: string
-}
-
 export interface LoginRequest {
-  email: string
+  username: string
   password: string
 }
 
@@ -64,19 +53,10 @@ export interface IDocumentoListParams extends ITablaParams {
 }
 
 export interface DocumentoListResponse {
-  documentoEmpresaId: string
-  documentoId: string
-  empresaId: string
-  empresaNombre: string
-  documentoNombre: string
-  urlDescarga: string
-  autorizado: boolean
-  fechaCreacion: string; 
-}
-
-export interface AutorizarRequest {
-  documentoEmpresaId: string
-  autorizado: boolean
+  asesor : string,
+  baseAsignacion: boolean,
+  baseCDH: boolean,
+  baseTelefono: boolean,
 }
 
 export interface DocumentoAutorizadoListResponse {
@@ -101,20 +81,17 @@ export interface EmpresaSelectResponse {
   usuario: string
 }
 
-export interface EmpresaCrearRequest {
-  nombre: string
-}
-
 // ============================================================
 // Descarga Historiales
 // ============================================================
 
 export interface DescargaHistorialResponse {
-  descargaHistorialId: string
+  id: string
   documentoNombre: string
   usuario: string
-  empresa: string
-  fechaDescarga: string
+  fecha: string
+  hora: string
+  tablaOrigen: string
 }
 
 // ============================================================
@@ -122,8 +99,9 @@ export interface DescargaHistorialResponse {
 // ============================================================
 
 export interface SidebarItem {
-  sidebarId: string
-  nombre: string
-  url: string
-  icon: string
+  sidebarId: string;
+  nombre: string;
+  url: string;
+  icon: string;
+  child: SidebarItem[] | null;
 }
