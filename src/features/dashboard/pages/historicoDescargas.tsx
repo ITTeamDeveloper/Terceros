@@ -7,9 +7,10 @@ import { useHistoricoDescargas } from './customHooks/useHistoricoDescargas'
 
 const columns: ColumnDef<DescargaHistorialResponse>[] = [
     { label: 'Archivo', key: 'documentoNombre' },
-  { label: 'Estudio', key: 'empresa' },
+  { label: 'Tabla', key: 'tablaOrigen' },
   { label: 'Descargado por', key: 'usuario' },
-  { label: 'Fecha', key: 'fechaDescarga' },
+  { label: 'Fecha', key: 'fecha' },
+  { label: 'Hora', key: 'hora' },
 ]
 
 export const HistoricoDescargas = () => {
@@ -45,7 +46,7 @@ export const HistoricoDescargas = () => {
         }}
       >
         <SharedTable
-        //   title="Histórico de descargas"
+          // title="Histórico de descargas"
           columns={columns}
           data={data}
           loading={loading}

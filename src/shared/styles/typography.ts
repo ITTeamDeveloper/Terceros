@@ -31,8 +31,8 @@ export const display1: SxProps<Theme> = {
 /** Display 2 — Form headlines, section heroes. */
 export const display2: SxProps<Theme> = {
   fontFamily: FONT_DISPLAY,
-  fontSize: 34,
-  fontWeight: 400,
+  fontSize: 40,
+  fontWeight: 700,
   lineHeight: 1.1,
   letterSpacing: '-0.02em',
   color: TEXT,
@@ -124,11 +124,12 @@ export const label: SxProps<Theme> = {
 /** Eyebrow — Sección en mayúsculas (NAVEGACIÓN, CUENTA, PRÓXIMAMENTE). */
 export const eyebrow: SxProps<Theme> = {
   fontFamily: FONT_BODY,
-  fontSize: 10,
+  display: 'flex',
+  paddingBottom: '1rem',
+  fontSize: 14,
   fontWeight: 700,
-  letterSpacing: '0.14em',
-  textTransform: 'uppercase',
-  color: TEXT_MUTE,
+  color: ' #FFFFFF',
+  borderBottom: '3px solid ' + TEXT_MUTE
 }
 
 /** Eyebrow accent — Eyebrow en color de marca. */

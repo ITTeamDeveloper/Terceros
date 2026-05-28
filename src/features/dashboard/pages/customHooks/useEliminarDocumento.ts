@@ -36,10 +36,7 @@ export function useEliminarDocumento({ onSuccess }: UseEliminarDocumentoArgs = {
   const guardar = () => {
     if (!target?.documentoId) return
     const documentoId = target.documentoId
-    void ejecutar(() => documentoServices.eliminar(documentoId), {
-      successMessage: 'Archivo eliminado correctamente',
-      errorMessage: 'No se pudo eliminar el archivo',
-    })
+    void ejecutar(() => documentoServices.eliminar(documentoId))
   }
 
   return {

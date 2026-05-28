@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { documentoServices } from '../../../../services/documentoServices'
-import type { ComboOption } from '../../../../shared/components'
 import { usePanelFeedback } from '../../../../shared/hooks/usePanelFeedback'
 
 const MAX_ARCHIVOS = 4
@@ -12,15 +11,13 @@ interface UseAgregarDocumentoArgs {
 export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {}) {
   const [open, setOpen] = useState(false)
   const [archivos, setArchivos] = useState<File[]>([])
-  const [empresa, setEmpresa] = useState<ComboOption | null>(null)
+  const [estudio, setEstudio] = useState<string | null>(null)
   const [confirmando, setConfirmando] = useState(false)
-
-  const empresaId = empresa?.value ?? null
 
   const limpiar = () => {
     setOpen(false)
     setArchivos([])
-    setEmpresa(null)
+    setEstudio(null)
     setConfirmando(false)
   }
 
@@ -29,7 +26,10 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     onSuccess,
   })
 
-  const abrir = () => setOpen(true)
+  const abrir = (nombreEstudio: string) => {
+    setEstudio(nombreEstudio)
+    setOpen(true)
+  }
 
   const cerrar = () => {
     if (saving) return
@@ -44,7 +44,7 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   const puedeGuardar =
     archivos.length > 0 &&
     archivos.length <= MAX_ARCHIVOS &&
-    !!empresaId &&
+    !!estudio &&
     !saving
 
   const agregarArchivos = (files: File[]) => {
@@ -56,22 +56,20 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   }
 
   const guardar = () => {
-    if (!empresaId || archivos.length === 0) return
+    if (!estudio || archivos.length === 0) return
     if (!confirmando) {
       setConfirmando(true)
       return
     }
-    void ejecutar(() => documentoServices.subir(archivos, empresaId), {
-      successMessage: 'Archivos subidos correctamente',
-      errorMessage: 'No se pudieron subir los archivos',
-    })
+    void ejecutar(
+      () => documentoServices.agregarDocumento(estudio, archivos),
+    )
   }
 
   return {
     open,
     archivos,
-    empresa,
-    empresaId,
+    estudio,
     saving,
     feedback,
     puedeGuardar,
@@ -80,7 +78,6 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     abrir,
     cerrar,
     volverAEditar,
-    setEmpresa,
     agregarArchivos,
     quitarArchivo,
     guardar,

@@ -50,7 +50,7 @@ api.interceptors.response.use(
     const isAuthEndpoint = url.includes('/auth/')
     const status = error.response?.status
 
-    if (isAuthEndpoint || status !== 401) {
+    if (isAuthEndpoint || (status !== 401 && status !== 403)) {
       return Promise.reject(error)
     }
 

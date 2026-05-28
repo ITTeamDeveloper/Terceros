@@ -22,6 +22,7 @@ export interface PageResponse<T> {
 export interface JwtPayload {
   sub: string
   rol: 'admin' | 'user'
+  rol_ids?: number[]
   usuario_id: string
   nombre: string,
   empresa:string,
@@ -34,19 +35,8 @@ export interface JwtPayload {
 // Auth
 // ============================================================
 
-export interface RegisterRequest {
-  nombre: string
-  apellido: string
-  email: string
-  password: string
-}
-
-export interface MessageResponse {
-  message: string
-}
-
 export interface LoginRequest {
-  email: string
+  username: string
   password: string
 }
 
@@ -62,22 +52,37 @@ export interface LoginResponse {
 export interface IDocumentoListParams extends ITablaParams {
   empresaId?: string
 }
+export interface aprobarRequest {
+  estudio: string,
+  tabla: string,
+  aprobar: boolean,
+}
+
+export interface EstudioAprobado {
+    estudio: string;     // nombre del estudio
+    tablas:  string[];   // tablas con al menos una fila vigente (desaprobado=false)
+}
 
 export interface DocumentoListResponse {
-  documentoEmpresaId: string
-  documentoId: string
-  empresaId: string
-  empresaNombre: string
-  documentoNombre: string
-  urlDescarga: string
-  autorizado: boolean
-  fechaCreacion: string; 
-}
+    fechasAprobacion: FechasActualizacion;
+    fechasActualizacion: FechasActualizacion;
+    asesores: ClienteDocumento[];
+  }
 
-export interface AutorizarRequest {
-  documentoEmpresaId: string
-  autorizado: boolean
-}
+export  interface FechasActualizacion {
+    baseAsignacion: string | null;  // ISO-8601 LocalDateTime, ej: "2026-05-26T10:30:00"
+    baseCDH:        string | null;
+    baseTelefono:   string | null;
+    otros?:         Record<string, string | null>;
+  }
+
+export  interface ClienteDocumento {
+    asesor:         string;
+    baseAsignacion: boolean;
+    baseCDH:        boolean;
+    baseTelefono:   boolean;
+    otros?:         Record<string, boolean>;
+  }
 
 export interface DocumentoAutorizadoListResponse {
   documentoEmpresaId: string
@@ -101,20 +106,26 @@ export interface EmpresaSelectResponse {
   usuario: string
 }
 
-export interface EmpresaCrearRequest {
-  nombre: string
-}
-
 // ============================================================
 // Descarga Historiales
 // ============================================================
 
 export interface DescargaHistorialResponse {
-  descargaHistorialId: string
+  id: string
   documentoNombre: string
   usuario: string
-  empresa: string
-  fechaDescarga: string
+  fecha: string
+  hora: string
+  tablaOrigen: string
+}
+
+// ============================================================
+// Soporte
+// ============================================================
+
+export interface SoporteRequest {
+  subject: string
+  message: string
 }
 
 // ============================================================
@@ -122,8 +133,9 @@ export interface DescargaHistorialResponse {
 // ============================================================
 
 export interface SidebarItem {
-  sidebarId: string
-  nombre: string
-  url: string
-  icon: string
+  sidebarId: string;
+  nombre: string;
+  url: string;
+  icon: string;
+  child: SidebarItem[] | null;
 }

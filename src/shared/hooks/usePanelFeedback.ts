@@ -14,11 +14,6 @@ interface UsePanelFeedbackArgs {
   onSuccess?: () => void | Promise<void>
 }
 
-interface EjecutarOptions {
-  successMessage?: string
-  errorMessage?: string
-}
-
 export function usePanelFeedback({ onAfterClose, onSuccess }: UsePanelFeedbackArgs) {
   const [feedback, setFeedback] = useState<PanelFeedbackState>({ open: false, message: '' })
   const [saving, setSaving] = useState(false)
@@ -30,10 +25,7 @@ export function usePanelFeedback({ onAfterClose, onSuccess }: UsePanelFeedbackAr
     }
   }, [])
 
-  const ejecutar = async <T,>(
-    action: () => Promise<T>,
-    opts: EjecutarOptions = {},
-  ): Promise<void> => {
+  const ejecutar = async <T,>(action: () => Promise<T>): Promise<void> => {
     setSaving(true)
 
     let success = false
@@ -44,16 +36,14 @@ export function usePanelFeedback({ onAfterClose, onSuccess }: UsePanelFeedbackAr
       const res = await action()
       success = true
       statusCode = 200
-      const resMessage = (res as { message?: string } | undefined)?.message
-      message = resMessage ?? opts.successMessage ?? 'Operación realizada con éxito'
+      message = (res as { message?: string } | undefined)?.message ?? ''
     } catch (err) {
       const axiosErr = err as AxiosError<{ message?: string; error?: string }>
       statusCode = axiosErr.response?.status ?? 500
       message =
         axiosErr.response?.data?.message ??
         axiosErr.response?.data?.error ??
-        opts.errorMessage ??
-        'Ocurrió un error al procesar la solicitud'
+        ''
       success = false
     }
 

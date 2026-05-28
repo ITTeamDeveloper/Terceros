@@ -1,77 +1,129 @@
 import { api } from './services'
 import type {
-  AutorizarRequest,
-  DocumentoAutorizadoListResponse,
+  aprobarRequest,
   DocumentoListResponse,
+  EstudioAprobado,
+  FechasActualizacion,
   IDocumentoListParams,
-  MessageResponse,
-  PageResponse,
 } from './interfaces'
 
-const subir = async (archivos: File[], empresaId: string): Promise<MessageResponse> => {
-  const formData = new FormData()
-  archivos.forEach((archivo) => formData.append('archivos', archivo))
-  formData.append('empresaId', empresaId)
-  formData.append('autorizado', 'true')
-
-  const { data } = await api.post<MessageResponse>('/documentos', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-  return data
-}
 
 const listar = async (
-  params: IDocumentoListParams,
+  params?: IDocumentoListParams,
   signal?: AbortSignal,
-): Promise<PageResponse<DocumentoListResponse>> => {
-  const { data } = await api.get<PageResponse<DocumentoListResponse>>('/documentos', {
+): Promise<DocumentoListResponse> => {
+  const { data } = await api.get<RespuestaDocumentosRaw>('/clientes/documentos', {
     params,
     signal,
   })
-  return data
+  return normalizarRespuestaDocumentos(data)
 }
 
-const eliminar = async (documentoId: string): Promise<MessageResponse> => {
-  const { data } = await api.delete<MessageResponse>(`/documentos/${documentoId}`)
-  return data
-}
-
-const autorizar = async (payload: AutorizarRequest): Promise<MessageResponse> => {
-  const { data } = await api.post<MessageResponse>('/documentos/autorizar', payload)
-  return data
-}
-
-const listarAutorizados = async (
-  params: IDocumentoListParams,
-  signal?: AbortSignal,
-): Promise<PageResponse<DocumentoAutorizadoListResponse>> => {
-  const { data } = await api.get<PageResponse<DocumentoAutorizadoListResponse>>(
-    '/documentos/autorizados',
-    { params, signal },
-  )
-  return data
-}
-
-const descargar = async (documentoId: string, fileName = 'documento.xlsx'): Promise<void> => {
-  const response = await api.get<Blob>(`/documentos/${documentoId}/descargar`, {
+const descargar = async (asesorNombre: string, tablaNombre: string): Promise<void> => {
+  const response = await api.get<Blob>(`cliente/documento/${asesorNombre}/descargar/${tablaNombre}`, {
     responseType: 'blob',
   })
 
   const url = URL.createObjectURL(response.data)
   const link = document.createElement('a')
   link.href = url
-  link.download = fileName
   document.body.appendChild(link)
   link.click()
   link.remove()
   URL.revokeObjectURL(url)
 }
 
+const aprobar = async (data: aprobarRequest) => {
+  const response = await api.post('cliente/documentos/aprobar', data)
+  return response.data
+}
+
+interface ClienteDocumentoAprobadoRaw {
+  asesor: string
+  baseAsignacion: boolean
+  baseCDH: boolean
+  baseTelefono: boolean
+  otras?: Record<string, boolean>
+  otros?: Record<string, boolean>
+}
+
+type RespuestaDocumentosRaw =
+  | ClienteDocumentoAprobadoRaw[]
+  | {
+      asesores: ClienteDocumentoAprobadoRaw[]
+      fechasActualizacion?: FechasActualizacion
+      fechasAprobacion?: FechasActualizacion
+    }
+
+const fechasVacias = (): FechasActualizacion => ({
+  baseAsignacion: null,
+  baseCDH: null,
+  baseTelefono: null,
+})
+
+const normalizarRespuestaDocumentos = (data: RespuestaDocumentosRaw): DocumentoListResponse => {
+  const rawAsesores = Array.isArray(data) ? data : data.asesores ?? []
+  const fechasActualizacion =
+    !Array.isArray(data) && data.fechasActualizacion
+      ? data.fechasActualizacion
+      : fechasVacias()
+  const fechasAprobacion =
+    !Array.isArray(data) && data.fechasAprobacion
+      ? data.fechasAprobacion
+      : fechasVacias()
+
+  return {
+    fechasActualizacion,
+    fechasAprobacion,
+    asesores: rawAsesores.map(({ otras, otros, ...rest }) => ({
+      ...rest,
+      otros: otros ?? otras,
+    })),
+  }
+}
+
+const documentoAprobados = async (
+  signal?: AbortSignal,
+): Promise<DocumentoListResponse> => {
+  const { data } = await api.get<RespuestaDocumentosRaw>(
+    'clientes/documentosAprobados',
+    { signal },
+  )
+  return normalizarRespuestaDocumentos(data)
+}
+
+const listadocumentosAprobados = async (
+  signal?: AbortSignal,
+): Promise<EstudioAprobado[]> => {
+  const { data } = await api.get<EstudioAprobado[]>('cliente/documento/listaAprobados', {
+    signal,
+  })
+  return data
+}
+
+const agregarDocumento = async (
+  estudio: string,
+  files: File[],
+) => {
+  const formData = new FormData()
+  files.forEach((file) => formData.append('files', file))
+
+  const { data } = await api.post(
+    'cliente/documento/agregar',
+    formData,
+    {
+      params: { estudio },
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  )
+  return data
+}
+
 export const documentoServices = {
-  subir,
   listar,
-  eliminar,
-  autorizar,
-  listarAutorizados,
   descargar,
+  aprobar,
+  documentoAprobados,
+  listadocumentosAprobados,
+  agregarDocumento,
 }

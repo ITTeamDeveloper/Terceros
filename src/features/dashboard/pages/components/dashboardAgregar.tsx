@@ -7,25 +7,18 @@ import {
   LockOpenOutlined as LockOpenIcon,
   UploadFileOutlined as UploadFileIcon,
 } from '@mui/icons-material'
-import { SharedPanel, SharedSelect } from '../../../../shared/components'
-import type { ComboOption } from '../../../../shared/components'
+import { SharedPanel } from '../../../../shared/components'
 import type { useAgregarDocumento } from '../customHooks/useAgregarDocumento'
 
 interface DashboardAgregarProps {
   controller: ReturnType<typeof useAgregarDocumento>
-  empresas: ComboOption[]
-  loadingEmpresas?: boolean
 }
 
-export function DashboardAgregar({
-  controller,
-  empresas,
-  loadingEmpresas = false,
-}: DashboardAgregarProps) {
+export function DashboardAgregar({ controller }: DashboardAgregarProps) {
   const {
     open,
     archivos,
-    empresa,
+    estudio,
     saving,
     feedback,
     puedeGuardar,
@@ -34,7 +27,6 @@ export function DashboardAgregar({
     cerrar,
     guardar,
     volverAEditar,
-    setEmpresa,
     agregarArchivos,
     quitarArchivo,
   } = controller
@@ -107,7 +99,7 @@ export function DashboardAgregar({
             <Typography
               sx={{ fontSize: 12, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
             >
-              Estudio: <strong>{empresa?.data ?? '—'}</strong>
+              Estudio: <strong>{estudio ?? '—'}</strong>
             </Typography>
             <Typography
               sx={{ fontSize: 12, color: '#1D1D1D', fontFamily: 'Inter, sans-serif' }}
@@ -135,14 +127,39 @@ export function DashboardAgregar({
         </Box>
       ) : (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-        <SharedSelect
-          label="Estudio"
-          placeholder="Selecciona un estudio"
-          options={empresas}
-          value={empresa}
-          onChange={setEmpresa}
-          loading={loadingEmpresas}
-        />
+        <Box>
+          <Typography
+            sx={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: '#1D1D1D',
+              fontFamily: 'Inter, sans-serif',
+              mb: 0.75,
+            }}
+          >
+            Estudio
+          </Typography>
+          <Box
+            sx={{
+              px: 2,
+              py: 1.25,
+              bgcolor: '#F3F0FF',
+              border: '1px solid #EAE5FF',
+              borderRadius: '6px',
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#1D1D1D',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              {estudio ?? '—'}
+            </Typography>
+          </Box>
+        </Box>
 
         <Box>
           <Typography

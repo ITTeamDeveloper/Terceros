@@ -18,7 +18,9 @@ function decodeJwt(token: string): JwtPayload | null {
   try {
     const base64 = token.split('.')[1]
     if (!base64) return null
-    const json = atob(base64.replace(/-/g, '+').replace(/_/g, '/'))
+    const binary = atob(base64.replace(/-/g, '+').replace(/_/g, '/'))
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
+    const json = new TextDecoder('utf-8').decode(bytes)
     return JSON.parse(json) as JwtPayload
   } catch {
     return null

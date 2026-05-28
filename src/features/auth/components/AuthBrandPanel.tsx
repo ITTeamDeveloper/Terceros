@@ -1,22 +1,22 @@
+import { Typography } from '@mui/material'
 import Box from '@mui/material/Box'
+import { brandPanelSize, containerFlow, imageSize, textSize } from './AuthBrandPanelStyle'
 
-const ACCENT_DOTS = ['#B19BFD', '#E3734F', '#F3BB4A', '#456648', '#4574BF', '#E8C8D6']
 
-interface AuthBrandPanelProps {
-  glow2Color?: string
-}
-
-export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) {
+export function AuthBrandPanel() {
   return (
     <Box
+      className="auth-brand-panel"
       sx={{
-        width: 520,
+        width: '100%',
+        height: '100vh',
         flexShrink: 0,
-        position: 'relative',
-        bgcolor: '#1D1D1D',
+        position: 'absolute',
+        bgcolor: '#456648',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
+        animation: `${brandPanelSize} 0.58s cubic-bezier(0.4, 0, 0.2, 1) 2.42s forwards`,
       }}
     >
       {/* Lila accent line */}
@@ -32,7 +32,6 @@ export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) 
           height: 520,
           borderRadius: '50%',
           bgcolor: '#B19BFD',
-          opacity: 0.18,
         }}
       />
       <Box
@@ -43,8 +42,7 @@ export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) 
           width: 340,
           height: 340,
           borderRadius: '50%',
-          bgcolor: glow2Color,
-          opacity: 0.10,
+          bgcolor: '#eae6db',
         }}
       />
 
@@ -64,23 +62,41 @@ export function AuthBrandPanel({ glow2Color = '#E3734F' }: AuthBrandPanelProps) 
       />
 
       {/* Logo */}
-      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', px: 6, pt: 6 }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          transformOrigin: 'center',
+          animation: `${containerFlow} 2.42s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
+        }}
+      >
         <Box
           component="img"
-          src="/Logo%20Finanty%20blanco.png"
+          src="/logo.png"
           alt="Finanty"
-          sx={{ height: '25rem', width: 'auto', display: 'block' }}
+          sx={{
+            height: '9rem',
+            width: 'auto',
+            paddingRight: 1,
+            display: 'block',
+            borderRight: '2px solid white',
+            marginRight: '1.5rem',
+            animation: `${imageSize} 2.42s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
+          }}
         />
-      </Box>
-
-      {/* Spacer */}
-      <Box sx={{ flex: 1 }} />
-
-      {/* Accent dots */}
-      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 1.25, px: 6, pb: 6 }}>
-        {ACCENT_DOTS.map((c) => (
-          <Box key={c} sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: c }} />
-        ))}
+        <Typography
+          sx={{
+            fontFamily: 'sans-serif',
+            color: 'white',
+            fontSize: '9rem',
+            fontWeight: 'bold',
+            whiteSpace: 'nowrap',
+            animation: `${textSize} 2.42s cubic-bezier(0.4, 0, 0.2, 1) forwards`,
+          }}
+        >
+          Terceros
+        </Typography>
       </Box>
     </Box>
   )
