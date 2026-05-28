@@ -22,7 +22,7 @@ export function AppMessage({
   open,
   message,
   statusCode,
-  duration = 4000,
+  duration = 2000,
   onClose,
 }: AppMessageProps) {
   return (
@@ -30,7 +30,7 @@ export function AppMessage({
       open={open}
       autoHideDuration={duration}
       onClose={onClose}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
       <Alert
         onClose={onClose}

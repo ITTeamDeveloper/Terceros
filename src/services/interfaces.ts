@@ -22,6 +22,7 @@ export interface PageResponse<T> {
 export interface JwtPayload {
   sub: string
   rol: 'admin' | 'user'
+  rol_ids?: number[]
   usuario_id: string
   nombre: string,
   empresa:string,
@@ -51,13 +52,37 @@ export interface LoginResponse {
 export interface IDocumentoListParams extends ITablaParams {
   empresaId?: string
 }
+export interface aprobarRequest {
+  estudio: string,
+  tabla: string,
+  aprobar: boolean,
+}
+
+export interface EstudioAprobado {
+    estudio: string;     // nombre del estudio
+    tablas:  string[];   // tablas con al menos una fila vigente (desaprobado=false)
+}
 
 export interface DocumentoListResponse {
-  asesor : string,
-  baseAsignacion: boolean,
-  baseCDH: boolean,
-  baseTelefono: boolean,
-}
+    fechasAprobacion: FechasActualizacion;
+    fechasActualizacion: FechasActualizacion;
+    asesores: ClienteDocumento[];
+  }
+
+export  interface FechasActualizacion {
+    baseAsignacion: string | null;  // ISO-8601 LocalDateTime, ej: "2026-05-26T10:30:00"
+    baseCDH:        string | null;
+    baseTelefono:   string | null;
+    otros?:         Record<string, string | null>;
+  }
+
+export  interface ClienteDocumento {
+    asesor:         string;
+    baseAsignacion: boolean;
+    baseCDH:        boolean;
+    baseTelefono:   boolean;
+    otros?:         Record<string, boolean>;
+  }
 
 export interface DocumentoAutorizadoListResponse {
   documentoEmpresaId: string
@@ -92,6 +117,15 @@ export interface DescargaHistorialResponse {
   fecha: string
   hora: string
   tablaOrigen: string
+}
+
+// ============================================================
+// Soporte
+// ============================================================
+
+export interface SoporteRequest {
+  subject: string
+  message: string
 }
 
 // ============================================================

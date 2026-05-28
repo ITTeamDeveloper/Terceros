@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { typo, fontFamily } from '../../shared/styles/typography'
@@ -131,6 +132,11 @@ export function Sidebar({ expanded }: SidebarProps) {
               <NavRow key={child.url} item={child} expanded={expanded} />
             ))
           }
+
+          <Box sx={{ mt: 'auto', display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+            <Divider sx={{ borderColor: 'rgba(255,255,255,0.16)' }} />
+            <NavRow item={{nombre:'Ayuda', url:'/soporte', icon: 'ayuda', sidebarId:'ayuda1', child: []}} expanded={expanded} />
+          </Box>
         </Box>
       ))
       }

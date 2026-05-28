@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import {
+  AddOutlined as AddIcon,
   CloudDownloadOutlined as CloudDownloadIcon,
   // DeleteOutlined as DeleteIcon,
   FilterAltOutlined as FilterIcon,
   LockOutlined as LockIcon,
   LockOpenOutlined as LockOpenIcon,
 } from '@mui/icons-material'
-import { SharedSelect, SharedTable } from '../../../shared/components'
+import { AppMessage } from '../../../shared/components'
 import { typo } from '../../../shared/styles/typography'
 import type { ComboOption } from '../../../shared/components'
 import type { ColumnDef, TableAction } from '../../../shared/types/table.types'
@@ -26,13 +29,15 @@ import { DashboardEliminar } from './components/dashboardEliminar'
 import { DocumentoCard } from './components/documentoCard'
 import { useListarDocumentos } from './customHooks/useListarDocumentos'
 import { useDescargarDocumento } from './customHooks/useDescargarDocumento'
+import { useAgregarDocumento } from './customHooks/useAgregarDocumento'
+import { useAutorizarDocumento } from './customHooks/useAutorizarDocumento'
+import { useDocumentosAprobados } from './customHooks/useDocumentosAprobados'
 
 function MainDashboard() {
   const { payload } = useAuth()
   const isAdmin = payload?.rol === 'admin'
-
-  const [docs, setDocs] = useState<DocumentoListResponse[]>([])
-  const [total, setTotal] = useState(0)
+  const rolId = payload?.rol_ids?.[0]
+  const esEstudio = rolId === 17
   const [params, setParams] = useState<IDocumentoListParams>({
     search: '',
     skip: 0,
@@ -40,26 +45,11 @@ function MainDashboard() {
     empresaId: payload?.empresa_id ?? undefined,
   })
 
-  const [empresas, setEmpresas] = useState<ComboOption[]>([])
-  const [loadingEmpresas, setLoadingEmpresas] = useState(false)
-  const [empresaFiltro, setEmpresaFiltro] = useState<ComboOption | null>(null)
-  const { estudioDocs } = useListarDocumentos()
-  const {descargar} = useDescargarDocumento()
-  const loadAbortRef = useRef<AbortController | null>(null)
-
-
-  const handleAplicarFiltro = () => {
-    setParams((p) => ({ ...p, empresaId: empresaFiltro?.value, skip: 0 }))
-  }
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setParams((p) => ({ ...p, skip: page * pageSize, take: pageSize }))
-  }
-
-  const handleSearch = (term: string) => {
-    setParams((p) => ({ ...p, search: term, skip: 0 }))
-  }
-
+  const { estudioDocs, fechas, fechasAprobacion, refrescar: refrescarDocumentos } = useListarDocumentos({ rolId })
+  const { descargar, feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
+  const aprobadosCtrl = useDocumentosAprobados({ rolId })
+  const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
+  const autorizarController = useAutorizarDocumento({ onSuccess: aprobadosCtrl.refrescar })
 
   const intro = isAdmin
     ? {
@@ -80,7 +70,7 @@ function MainDashboard() {
         <Typography sx={typo.subtitle}>{intro.description}</Typography>
       </Box>
 
-      {isAdmin && (
+      {/* {isAdmin && (
         <Box
           sx={{
             mb: 2,
@@ -185,7 +175,7 @@ function MainDashboard() {
             </Typography>
           )}
         </Box>
-      )}
+      )} */}
 
       <Box
         sx={{
@@ -210,10 +200,64 @@ function MainDashboard() {
           </Box>
         ) : (
           estudioDocs.map((doc, index) => (
-            <DocumentoCard key={`${doc.asesor}-${index}`} data={doc}  onDownload={descargar}/>
+            <DocumentoCard
+              key={crypto.randomUUID()}
+              data={doc}
+              fechasActualizacion={fechas}
+              fechasAprobacion={esEstudio ? null : fechasAprobacion}
+              fechaLabel={esEstudio ? 'Última aprobación' : 'Última actualización'}
+              fechaAprobacionLabel={esEstudio ? undefined : 'Última aprobación'}
+              onDownload={descargar}
+              onAprobar={
+                esEstudio
+                  ? undefined
+                  : (asesor, base) =>
+                      autorizarController.abrir({
+                        aprobar: !aprobadosCtrl.estaAprobado(asesor, base),
+                        estudio: asesor,
+                        tabla: base.toUpperCase(),
+                      })
+              }
+              estaAprobado={
+                aprobadosCtrl.habilitado
+                  ? (base) => aprobadosCtrl.estaAprobado(doc.asesor, base)
+                  : undefined
+              }
+              panel={{
+                show: !esEstudio,
+                button: (
+                  <Tooltip title="Agregar documento">
+                    <IconButton
+                      onClick={() => agregarController.abrir(doc.asesor)}
+                      aria-label="Agregar documento"
+                      sx={{
+                        bgcolor: '#B19BFD',
+                        color: '#FFFFFF',
+                        width: 32,
+                        height: 32,
+                        '&:hover': { bgcolor: '#9B82FC' },
+                      }}
+                    >
+                      <AddIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                ),
+              }}
+            />
           ))
         )}
       </Box>
+
+      <DashboardAgregar controller={agregarController} />
+
+      <DashboardAutorizar controller={autorizarController} />
+
+      <AppMessage
+        open={descargarFeedback.open}
+        message={descargarFeedback.message}
+        statusCode={descargarFeedback.statusCode}
+        onClose={cerrarDescargarFeedback}
+      />
     </Box>
   )
 }

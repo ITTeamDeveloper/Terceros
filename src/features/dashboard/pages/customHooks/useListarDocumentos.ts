@@ -1,22 +1,49 @@
-import { useEffect, useState } from "react"
-import type { DocumentoListResponse } from "../../../../services/interfaces"
-import { documentoServices } from "../../../../services/documentoServices";
+import { useCallback, useEffect, useState } from 'react'
+import type { ClienteDocumento, FechasActualizacion } from '../../../../services/interfaces'
+import { documentoServices } from '../../../../services/documentoServices'
 
-export const useListarDocumentos = () => { 
-    const [estudioDocs, setEstudioDocs] = useState<DocumentoListResponse[]>([]);
+const ROL_ESTUDIO = 17
 
-    const getDocumentos = async () => {
-        try{
-            const data = await documentoServices.listar(null);
-            setEstudioDocs(data);
-        } catch (error) {
-            console.error("Error al listar documentos:", error);
-        }
-    }
+interface UseListarDocumentosArgs {
+  rolId?: number
+}
 
-    useEffect(() => {
-        getDocumentos();
-    }, []);
+export const useListarDocumentos = ({ rolId }: UseListarDocumentosArgs = {}) => {
+  const [estudioDocs, setEstudioDocs] = useState<ClienteDocumento[]>([])
+  const [fechas, setFechas] = useState<FechasActualizacion | null>(null)
+  const [fechasAprobacion, setFechasAprobacion] = useState<FechasActualizacion | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    return { estudioDocs };
+  const usarAprobados = rolId === ROL_ESTUDIO
+
+  const cargar = useCallback(
+    async (signal?: AbortSignal) => {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = usarAprobados
+          ? await documentoServices.documentoAprobados(signal)
+          : await documentoServices.listar(undefined, signal)
+        setEstudioDocs(data.asesores)
+        setFechas(data.fechasActualizacion)
+        setFechasAprobacion(data.fechasAprobacion)
+      } catch (err) {
+        if ((err as { name?: string })?.name === 'CanceledError') return
+        console.error('Error al listar documentos:', err)
+        setError('No se pudieron cargar los documentos.')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [usarAprobados],
+  )
+
+  useEffect(() => {
+    const ctrl = new AbortController()
+    void cargar(ctrl.signal)
+    return () => ctrl.abort()
+  }, [cargar])
+
+  return { estudioDocs, fechas, fechasAprobacion, loading, error, refrescar: cargar }
 }

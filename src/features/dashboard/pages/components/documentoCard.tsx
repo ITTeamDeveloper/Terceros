@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
@@ -7,15 +7,53 @@ import CircularProgress from '@mui/material/CircularProgress'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   Download as DownloadIcon,
+  Check as CheckIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material'
 import { fontFamily } from '../../../../shared/styles/typography'
-import type { DocumentoListResponse } from '../../../../services/interfaces'
+import type { ClienteDocumento, FechasActualizacion } from '../../../../services/interfaces'
 
-export type DocumentoBaseKey = Exclude<keyof DocumentoListResponse, 'asesor'>
+export type DocumentoBaseKey = Exclude<keyof ClienteDocumento, 'asesor' | 'otros'>
+
+interface PanelTrigger {
+  button: ReactNode
+  show: boolean
+}
 
 interface DocumentoCardProps {
-  data: DocumentoListResponse
-  onDownload?: (asesor: string, base: DocumentoBaseKey) => Promise<void> | void
+  data: ClienteDocumento
+  fechasActualizacion?: FechasActualizacion | null
+  fechasAprobacion?: FechasActualizacion | null
+  fechaLabel?: string
+  fechaAprobacionLabel?: string
+  onDownload?: (asesor: string, base: string) => Promise<void> | void
+  onAprobar?: (asesor: string, base: string, label: string) => void
+  estaAprobado?: (base: string) => boolean
+  panel?: PanelTrigger
+}
+
+const formatFecha = (iso: string | null | undefined): string | null => {
+  if (!iso) return null
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
+  if (!m) return null
+  const [, y, mo, d, h, mi] = m
+  return `${d}/${mo}/${y} ${h}:${mi}`
+}
+
+const buscarFecha = (
+  fechas: FechasActualizacion | null | undefined,
+  key: string,
+): string | null => {
+  if (!fechas) return null
+  const upper = key.toUpperCase()
+  for (const [k, v] of Object.entries(fechas)) {
+    if (k === 'otros') continue
+    if (k.toUpperCase() === upper) return (v as string | null) ?? null
+  }
+  for (const [k, v] of Object.entries(fechas.otros ?? {})) {
+    if (k.toUpperCase() === upper) return v ?? null
+  }
+  return null
 }
 
 const BLOCK_LABELS: Record<DocumentoBaseKey, string> = {
@@ -24,15 +62,23 @@ const BLOCK_LABELS: Record<DocumentoBaseKey, string> = {
   baseTelefono: 'Base Teléfono',
 }
 
-export function DocumentoCard({ data, onDownload }: DocumentoCardProps) {
+export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fechaLabel, fechaAprobacionLabel, onDownload, onAprobar, estaAprobado, panel }: DocumentoCardProps) {
   const [open, setOpen] = useState(false)
-  const [downloading, setDownloading] = useState<Set<DocumentoBaseKey>>(new Set())
+  const [downloading, setDownloading] = useState<Set<string>>(new Set())
 
-  const visibleBlocks = (
+  const baseBlocks = (
     Object.entries(BLOCK_LABELS) as [DocumentoBaseKey, string][]
-  ).filter(([key]) => data[key] === true)
+  )
+    .filter(([key]) => data[key] === true)
+    .map(([key, label]) => ({ key, label }))
 
-  const handleDownload = async (key: DocumentoBaseKey) => {
+  const otrosBlocks = Object.entries(data.otros ?? {})
+    .filter(([, val]) => val === true)
+    .map(([key]) => ({ key, label: key }))
+
+  const visibleBlocks = [...baseBlocks, ...otrosBlocks]
+
+  const handleDownload = async (key: string) => {
     if (!onDownload || downloading.has(key)) return
 
     setDownloading((prev) => new Set(prev).add(key))
@@ -78,22 +124,27 @@ export function DocumentoCard({ data, onDownload }: DocumentoCardProps) {
           {data.asesor}
         </Typography>
 
-        <IconButton
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? 'Cerrar' : 'Abrir'}
-          sx={{
-            transition: 'transform 0.2s ease',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-            color: '#1D1D1D',
-          }}
-        >
-          <KeyboardArrowDownIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {panel?.show && panel.button}
+
+          <IconButton
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Cerrar' : 'Abrir'}
+            sx={{
+              transition: 'transform 0.2s ease',
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+              color: '#1D1D1D',
+            }}
+          >
+            <KeyboardArrowDownIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Collapsible content */}
       <Collapse in={open}>
         <Box
+          key={crypto.randomUUID()}
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -115,11 +166,13 @@ export function DocumentoCard({ data, onDownload }: DocumentoCardProps) {
               Sin documentos disponibles.
             </Typography>
           ) : (
-            visibleBlocks.map(([key, label]) => {
+            visibleBlocks.map(({ key, label }) => {
               const isDownloading = downloading.has(key)
+              const fechaFmt = formatFecha(buscarFecha(fechasActualizacion, key))
+              const fechaAprobacionFmt = formatFecha(buscarFecha(fechasAprobacion, key))
               return (
                 <Box
-                  key={key}
+                  key={crypto.randomUUID()}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -141,20 +194,69 @@ export function DocumentoCard({ data, onDownload }: DocumentoCardProps) {
                     {label}
                   </Typography>
 
-                  <IconButton
-                    onClick={() => handleDownload(key)}
-                    disabled={isDownloading || !onDownload}
-                    aria-label={`Descargar ${label}`}
-                    sx={{
-                      color: '#B19BFD',
-                      '&:hover': { bgcolor: 'rgba(177, 155, 253, 0.12)' },
-                      '&.Mui-disabled': { color: '#B19BFD', opacity: 0.6 },
-                    }}
-                  >
-                    {isDownloading
-                      ? <CircularProgress size={18} sx={{ color: '#B19BFD' }} />
-                      : <DownloadIcon fontSize="small" />}
-                  </IconButton>
+                  <Box key={crypto.randomUUID()} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {(fechaFmt || fechaAprobacionFmt) && (
+                      <Typography
+                        sx={{
+                          fontFamily: fontFamily.body,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: '#1D1D1D',
+                          mr: 0.75,
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {fechaFmt && (
+                          <>
+                            {fechaLabel ? `${fechaLabel}: ` : ''}{fechaFmt}
+                          </>
+                        )}
+                        {fechaFmt && fechaAprobacionFmt && ' - '}
+                        {fechaAprobacionFmt && (
+                          <>
+                            {fechaAprobacionLabel ? `${fechaAprobacionLabel}: ` : ''}{fechaAprobacionFmt}
+                          </>
+                        )}
+                      </Typography>
+                    )}
+                    <IconButton
+                      onClick={() => handleDownload(key)}
+                      disabled={isDownloading || !onDownload}
+                      aria-label={`Descargar ${label}`}
+                      sx={{
+                        color: '#B19BFD',
+                        '&:hover': { bgcolor: 'rgba(177, 155, 253, 0.12)' },
+                        '&.Mui-disabled': { color: '#B19BFD', opacity: 0.6 },
+                      }}
+                    >
+                      {isDownloading
+                        ? <CircularProgress size={18} sx={{ color: '#B19BFD' }} />
+                        : <DownloadIcon fontSize="small" />}
+                    </IconButton>
+
+                    {onAprobar && (() => {
+                      const aprobado = estaAprobado?.(key) ?? false
+                      const bg = aprobado ? '#B19BFD' : '#C7C7CF'
+                      const hoverBg = aprobado ? '#9B82FC' : '#ABABB5'
+                      return (
+                        <IconButton
+                          onClick={() => onAprobar(data.asesor, key, label)}
+                          aria-label={aprobado ? `Desaprobar ${label}` : `Aprobar ${label}`}
+                          sx={{
+                            bgcolor: bg,
+                            color: '#FFFFFF',
+                            width: 32,
+                            height: 32,
+                            '&:hover': { bgcolor: hoverBg },
+                          }}
+                        >
+                          {aprobado
+                            ? <CloseIcon fontSize="small" />
+                            : <CheckIcon fontSize="small" />}
+                        </IconButton>
+                      )
+                    })()}
+                  </Box>
                 </Box>
               )
             })
