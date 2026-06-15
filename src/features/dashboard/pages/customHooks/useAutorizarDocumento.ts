@@ -1,7 +1,7 @@
 import { useState } from 'react'
 // import { documentoServices } from '../../../../services/documentoServices'
 import { usePanelFeedback } from '../../../../shared/hooks/usePanelFeedback'
-import type { aprobarRequest } from '../../../../services/interfaces'
+import type { aprobarRequest, ClienteDocumentoFila } from '../../../../services/interfaces'
 import { documentoServices } from '../../../../services/documentoServices'
 
 interface UseAutorizarDocumentoArgs {
@@ -25,8 +25,14 @@ export function useAutorizarDocumento({ onSuccess }: UseAutorizarDocumentoArgs =
 
   const open = !!target
 
-  const abrir = (row: aprobarRequest) => {
-    setTarget(row)
+  const abrir = (row: ClienteDocumentoFila) => {
+    console.log("abir ===>", row)
+    setTarget({
+      aprobar: true,
+      estudio: row.estudio,
+      tabla : row.documentoNombre
+
+    })
     setConfirmando(false)
   }
 

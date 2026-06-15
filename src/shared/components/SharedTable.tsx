@@ -16,6 +16,8 @@ import {
   Add as AddIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
+  Filter,
+  FilterAlt,
   InboxOutlined as InboxIcon,
   RefreshOutlined as RefreshIcon,
   Search as SearchIcon,
@@ -166,6 +168,8 @@ export function SharedTable<T extends object>({
   totalItems,
   loading = false,
   onAdd,
+  onFilter,
+  filterLabel = 'Filtrar',
   addLabel = 'Agregar',
   onRefresh,
   title,
@@ -268,6 +272,27 @@ export function SharedTable<T extends object>({
             }}
           >
             {addLabel}
+          </Button>
+        )}
+        {onFilter && (
+          <Button
+            onClick={onFilter}
+            startIcon={<FilterAlt sx={{ fontSize: 16 }} />}
+            sx={{
+              height: 34,
+              px: 2,
+              bgcolor: '#B19BFD',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: 12,
+              fontFamily: 'Inter, sans-serif',
+              borderRadius: '6px',
+              textTransform: 'none',
+              boxShadow: 'none',
+              '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
+            }}
+          >
+            {filterLabel}
           </Button>
         )}
       </Box>

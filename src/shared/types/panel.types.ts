@@ -9,7 +9,7 @@ export interface SharedPanelFeedback {
 export interface SharedPanelProps {
   open: boolean
   onClose: () => void
-  onSave: () => void
+  onSave?: () => void
   title: string
   children: React.ReactNode
   loading?: boolean
@@ -18,4 +18,6 @@ export interface SharedPanelProps {
   cancelLabel?: string
   saveLabel?: string
   saveDisabled?: boolean
+  width?: number | string | Record<string, number | string>
+  hideFooter?: boolean
 }

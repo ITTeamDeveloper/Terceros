@@ -30,6 +30,8 @@ export function SharedPanel({
   cancelLabel = 'Cancelar',
   saveLabel = 'Guardar',
   saveDisabled = false,
+  width = 380,
+  hideFooter = false,
 }: SharedPanelProps) {
   const handleCancel = onCancel ?? onClose
   return (
@@ -40,7 +42,8 @@ export function SharedPanel({
       slotProps={{
         paper: {
           sx: {
-            width: 380,
+            width,
+            maxWidth: '100vw',
             display: 'flex',
             flexDirection: 'column',
             boxShadow: '-4px 0 24px rgba(0,0,0,0.10)',
@@ -97,56 +100,60 @@ export function SharedPanel({
       )}
 
       {/* Footer fijo */}
-      <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1.5,
-          px: 3,
-          height: 64,
-          alignItems: 'center',
-          flexShrink: 0,
-        }}
-      >
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={handleCancel}
-          sx={{
-            textTransform: 'none',
-            fontWeight: 600,
-            fontSize: 13,
-            borderColor: '#EEEEEE',
-            color: '#1D1D1D',
-            fontFamily: 'Inter, sans-serif',
-            '&:hover': { borderColor: '#B19BFD', bgcolor: '#F3F0FF' },
-          }}
-        >
-          {cancelLabel}
-        </Button>
-        <Button
-          fullWidth
-          variant="contained"
-          onClick={onSave}
-          disabled={loading || saveDisabled}
-          sx={{
-            textTransform: 'none',
-            fontWeight: 700,
-            fontSize: 13,
-            bgcolor: '#B19BFD',
-            fontFamily: 'Inter, sans-serif',
-            boxShadow: 'none',
-            '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
-            '&.Mui-disabled': { bgcolor: '#D4C8FE', color: '#fff' },
-          }}
-        >
-          {loading ? (
-            <CircularProgress size={18} sx={{ color: '#fff' }} />
-          ) : (
-            saveLabel
-          )}
-        </Button>
-      </Box>
+      {!hideFooter && (
+        <>
+          <Divider />
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1.5,
+              px: 3,
+              height: 64,
+              alignItems: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleCancel}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: 13,
+                borderColor: '#EEEEEE',
+                color: '#1D1D1D',
+                fontFamily: 'Inter, sans-serif',
+                '&:hover': { borderColor: '#B19BFD', bgcolor: '#F3F0FF' },
+              }}
+            >
+              {cancelLabel}
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={onSave}
+              disabled={loading || saveDisabled}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 700,
+                fontSize: 13,
+                bgcolor: '#B19BFD',
+                fontFamily: 'Inter, sans-serif',
+                boxShadow: 'none',
+                '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
+                '&.Mui-disabled': { bgcolor: '#D4C8FE', color: '#fff' },
+              }}
+            >
+              {loading ? (
+                <CircularProgress size={18} sx={{ color: '#fff' }} />
+              ) : (
+                saveLabel
+              )}
+            </Button>
+          </Box>
+        </>
+      )}
     </Drawer>
   )
 }

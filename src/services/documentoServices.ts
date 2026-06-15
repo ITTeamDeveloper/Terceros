@@ -2,26 +2,47 @@ import { api } from './services'
 import type {
   aprobarRequest,
   DocumentoListResponse,
+  ClienteDocumentoFila,
   EstudioAprobado,
   FechasActualizacion,
   IDocumentoListParams,
+  ITablaParams,
+  PageResponse,
 } from './interfaces'
 
 
 const listar = async (
-  params?: IDocumentoListParams,
+  params: ITablaParams,
   signal?: AbortSignal,
-): Promise<DocumentoListResponse> => {
-  const { data } = await api.get<RespuestaDocumentosRaw>('/clientes/documentos', {
+): Promise<PageResponse<ClienteDocumentoFila>> => {
+  const { data } = await api.get<PageResponse<ClienteDocumentoFila>>('/clientes/documentos', {
     params,
     signal,
   })
-  return normalizarRespuestaDocumentos(data)
+  return data
 }
 
-const descargar = async (asesorNombre: string, tablaNombre: string): Promise<void> => {
+// Archivos grandes pueden tardar bastante; usamos un timeout amplio en vez del global (15s).
+const ARCHIVO_TIMEOUT_MS = 120000
+
+const obtenerArchivo = async (
+  asesorNombre: string,
+  tablaNombre: string,
+  signal?: AbortSignal,
+  documentoId?: string | null
+): Promise<Blob> => {
+  const { data } = await api.get<Blob>(
+    `cliente/documento/${asesorNombre}/descargar/${tablaNombre}`,
+    { responseType: 'blob', signal, timeout: ARCHIVO_TIMEOUT_MS, params: { id: documentoId } },
+  )
+  return data
+}
+
+const descargar = async (asesorNombre: string, tablaNombre: string, documentoId?: string | null): Promise<void> => {
   const response = await api.get<Blob>(`cliente/documento/${asesorNombre}/descargar/${tablaNombre}`, {
     responseType: 'blob',
+    timeout: ARCHIVO_TIMEOUT_MS,
+    params: { id: documentoId },
   })
 
   const url = URL.createObjectURL(response.data)
@@ -34,7 +55,7 @@ const descargar = async (asesorNombre: string, tablaNombre: string): Promise<voi
 }
 
 const aprobar = async (data: aprobarRequest) => {
-  const response = await api.post('cliente/documentos/aprobar', data)
+  const response = await api.post('cliente/documentos/aprobar', data, {timeout: ARCHIVO_TIMEOUT_MS})
   return response.data
 }
 
@@ -61,35 +82,35 @@ const fechasVacias = (): FechasActualizacion => ({
   baseTelefono: null,
 })
 
-const normalizarRespuestaDocumentos = (data: RespuestaDocumentosRaw): DocumentoListResponse => {
-  const rawAsesores = Array.isArray(data) ? data : data.asesores ?? []
-  const fechasActualizacion =
-    !Array.isArray(data) && data.fechasActualizacion
-      ? data.fechasActualizacion
-      : fechasVacias()
-  const fechasAprobacion =
-    !Array.isArray(data) && data.fechasAprobacion
-      ? data.fechasAprobacion
-      : fechasVacias()
+// const normalizarRespuestaDocumentos = (data: RespuestaDocumentosRaw): DocumentoListResponse => {
+//   const rawAsesores = Array.isArray(data) ? data : data.asesores ?? []
+//   const fechasActualizacion =
+//     !Array.isArray(data) && data.fechasActualizacion
+//       ? data.fechasActualizacion
+//       : fechasVacias()
+//   const fechasAprobacion =
+//     !Array.isArray(data) && data.fechasAprobacion
+//       ? data.fechasAprobacion
+//       : fechasVacias()
 
-  return {
-    fechasActualizacion,
-    fechasAprobacion,
-    asesores: rawAsesores.map(({ otras, otros, ...rest }) => ({
-      ...rest,
-      otros: otros ?? otras,
-    })),
-  }
-}
+//   return {
+//     fechasActualizacion,
+//     fechasAprobacion,
+//     asesores: rawAsesores.map(({ otras, otros, ...rest }) => ({
+//       ...rest,
+//       otros: otros ?? otras,
+//     })),
+//   }
+// }
 
 const documentoAprobados = async (
   signal?: AbortSignal,
-): Promise<DocumentoListResponse> => {
-  const { data } = await api.get<RespuestaDocumentosRaw>(
+): Promise<ClienteDocumentoFila[]> => {
+  const { data } = await api.get<ClienteDocumentoFila[]>(
     'clientes/documentosAprobados',
     { signal },
   )
-  return normalizarRespuestaDocumentos(data)
+  return data
 }
 
 const listadocumentosAprobados = async (
@@ -119,11 +140,22 @@ const agregarDocumento = async (
   return data
 }
 
+const aprobarDescarga = async (
+  aprobar : boolean,
+  documentoId: string
+) => {
+  const {data} = await api.put('cliente/aprobarDescarga', {params: {aprobar, documentoId}})
+
+  return data;
+}
+
 export const documentoServices = {
   listar,
+  obtenerArchivo,
   descargar,
   aprobar,
   documentoAprobados,
   listadocumentosAprobados,
   agregarDocumento,
+  aprobarDescarga
 }

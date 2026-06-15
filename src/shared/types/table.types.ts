@@ -25,6 +25,8 @@ export interface SharedTableProps<T> {
   loading?: boolean
   onAdd?: () => void
   addLabel?: string
+  onFilter?: () => void
+  filterLabel?: string
   onRefresh?: () => void
   title?: string
   maxBodyHeight?: number | string

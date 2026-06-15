@@ -7,8 +7,9 @@ import {
   LockOpenOutlined as LockOpenIcon,
   UploadFileOutlined as UploadFileIcon,
 } from '@mui/icons-material'
-import { SharedPanel } from '../../../../shared/components'
+import { SharedPanel, SharedSelect } from '../../../../shared/components'
 import type { useAgregarDocumento } from '../customHooks/useAgregarDocumento'
+import { colors } from '@mui/material'
 
 interface DashboardAgregarProps {
   controller: ReturnType<typeof useAgregarDocumento>
@@ -29,6 +30,8 @@ export function DashboardAgregar({ controller }: DashboardAgregarProps) {
     volverAEditar,
     agregarArchivos,
     quitarArchivo,
+    estudioData,
+    setEstudio,
   } = controller
 
   const restantes = maxArchivos - archivos.length
@@ -140,24 +143,13 @@ export function DashboardAgregar({ controller }: DashboardAgregarProps) {
             Estudio
           </Typography>
           <Box
-            sx={{
-              px: 2,
-              py: 1.25,
-              bgcolor: '#F3F0FF',
-              border: '1px solid #EAE5FF',
-              borderRadius: '6px',
-            }}
           >
-            <Typography
-              sx={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#1D1D1D',
-                fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              {estudio ?? '—'}
-            </Typography>
+            <SharedSelect
+              options={estudioData}
+              value={estudioData.find((o) => o.data === estudio) ?? null}  
+              onChange={(v) => setEstudio(v?.data ?? null)}
+              key={crypto.randomUUID()}
+            />
           </Box>
         </Box>
 

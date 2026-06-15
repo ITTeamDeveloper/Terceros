@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { documentoServices } from '../../../../services/documentoServices'
 import { usePanelFeedback } from '../../../../shared/hooks/usePanelFeedback'
+import { estudioServices } from '../../../../services/estudioServices'
+import type { ComboOption } from '../../../../shared/components'
 
 const MAX_ARCHIVOS = 4
 
@@ -13,6 +15,21 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   const [archivos, setArchivos] = useState<File[]>([])
   const [estudio, setEstudio] = useState<string | null>(null)
   const [confirmando, setConfirmando] = useState(false)
+  const [estudioData, setEstudioData] = useState<ComboOption[]>([]);
+
+  const getEstudio = async () => {
+    const listaEstudio = await estudioServices.listar();
+    const estudios = listaEstudio.map((v,i) => ({
+      data: v,
+      value: i.toString(),
+    }));
+
+    setEstudioData(estudios)
+  }
+
+  useEffect(()=> {
+    getEstudio();
+  },[])
 
   const limpiar = () => {
     setOpen(false)
@@ -26,8 +43,7 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     onSuccess,
   })
 
-  const abrir = (nombreEstudio: string) => {
-    setEstudio(nombreEstudio)
+  const abrir = () => {
     setOpen(true)
   }
 
@@ -81,5 +97,7 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     agregarArchivos,
     quitarArchivo,
     guardar,
+    setEstudio,
+    estudioData
   }
 }

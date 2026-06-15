@@ -1,67 +1,87 @@
-import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import {
-  AddOutlined as AddIcon,
-  CloudDownloadOutlined as CloudDownloadIcon,
-  // DeleteOutlined as DeleteIcon,
-  FilterAltOutlined as FilterIcon,
-  LockOutlined as LockIcon,
-  LockOpenOutlined as LockOpenIcon,
+  VisibilityOutlined as VerIcon,
+  CheckOutlined as AprobarIcon,
+  DownloadOutlined as DescargaIcon,
 } from '@mui/icons-material'
-import { AppMessage } from '../../../shared/components'
+import { AppMessage, SharedTable } from '../../../shared/components'
 import { typo } from '../../../shared/styles/typography'
-import type { ComboOption } from '../../../shared/components'
-import type { ColumnDef, TableAction } from '../../../shared/types/table.types'
-import { documentoServices } from '../../../services/documentoServices'
-import type {
-  DocumentoAutorizadoListResponse,
-  DocumentoListResponse,
-  IDocumentoListParams,
-} from '../../../services/interfaces'
 import { useAuth } from '../../auth/context/AuthContext'
 import { DashboardAgregar } from './components/dashboardAgregar'
 import { DashboardAutorizar } from './components/dashboardAutorizar'
-import { DashboardEliminar } from './components/dashboardEliminar'
 import { DocumentoCard } from './components/documentoCard'
 import { useListarDocumentos } from './customHooks/useListarDocumentos'
 import { useDescargarDocumento } from './customHooks/useDescargarDocumento'
 import { useAgregarDocumento } from './customHooks/useAgregarDocumento'
 import { useAutorizarDocumento } from './customHooks/useAutorizarDocumento'
 import { useDocumentosAprobados } from './customHooks/useDocumentosAprobados'
+import type { ColumnDef } from '../../../shared/types/table.types'
+import type { ClienteDocumentoFila } from '../../../services/interfaces'
+import { useFiltrarDocumento } from './customHooks/useFiltrarDocumento'
+import { DashboardFilter } from './components/dashboardFilter'
+import { useVisualizarDocumento } from './customHooks/useVisualizarDocumento'
+import { DashboardVisualizar } from './components/dashboardVisualizar'
+import { useHabilitarDescarga } from './customHooks/useHabilitarDescarga'
+import { DashboardHabilitarDescarga } from './components/dashboardHabilitarDescarga'
+
 
 function MainDashboard() {
   const { payload } = useAuth()
-  const isAdmin = payload?.rol === 'admin'
+  const isAdmin = payload?.roles.includes('SUPERVISOR_ESTUDIOS');
   const rolId = payload?.rol_ids?.[0]
   const esEstudio = rolId === 17
-  const [params, setParams] = useState<IDocumentoListParams>({
-    search: '',
-    skip: 0,
-    take: 10,
-    empresaId: payload?.empresa_id ?? undefined,
-  })
 
-  const { estudioDocs, fechas, fechasAprobacion, refrescar: refrescarDocumentos } = useListarDocumentos({ rolId })
+  const { documentos, total,cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolId })
   const { descargar, feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
   const aprobadosCtrl = useDocumentosAprobados({ rolId })
+  const filtrarController = useFiltrarDocumento({ onApply: handleFilter })
+  const visualizarController = useVisualizarDocumento()
+  const habilitarDescargaController = useHabilitarDescarga({ onSuccess: refrescarDocumentos })
   const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
   const autorizarController = useAutorizarDocumento({ onSuccess: aprobadosCtrl.refrescar })
 
   const intro = isAdmin
     ? {
-        title: 'Asignaciones de archivos',
-        description:
-          'Administra los archivos aprobados a cada estudio. Desde aquí puedes agregar nuevos archivos y eliminarlos cuando ya no sean necesarios.',
-      }
+      title: 'Gestión de documentos',
+      description: 'Revisa, valida y aprueba los documentos que serán visibles para terceros.',
+    }
     : {
-        title: 'Mis archivos aprobados',
-        description:
-          'Consulta los archivos que tu estudio tiene autorizados para descargar.',
-      }
+      title: 'Documentos disponibles',
+      description: 'Aquí puedes consultar y descargar los archivos aprobados y vigentes de tu estudio.',
+    }
+
+  const columns: ColumnDef<ClienteDocumentoFila>[] = [
+    { label: 'Estudio', key: 'estudio' },
+    { label: 'Documento', key: 'documentoNombre' },
+    {
+      label: 'Estado',
+      key: 'estado',
+      render: (value) => (
+        <Box
+          component="span"
+          sx={{
+            display: 'inline-block',
+            px: 3.5,
+            py: 0.5,
+            borderRadius: '0.2rem',
+            fontSize: 12,
+            fontWeight: 600,
+            textTransform: 'capitalize',
+            color: value === 'nuevo' ? '#572bf7' : '#007704a8',
+            bgcolor: value === 'nuevo' ? '#d0c4fd' : '#aed6af',
+          }}
+        >
+          {value}
+        </Box>
+      ),
+    },
+    { label: 'Fecha de actualización', key: 'fechaActualizacion' },
+    { label: 'Fecha de aprobación', key: 'fechaAprobado' },
+  ]
+
 
   return (
     <Box sx={{ pt: 3, px: 4, pb: 3.5 }}>
@@ -70,114 +90,43 @@ function MainDashboard() {
         <Typography sx={typo.subtitle}>{intro.description}</Typography>
       </Box>
 
-      {/* {isAdmin && (
-        <Box
-          sx={{
-            mb: 2,
-            p: 2,
-            bgcolor: '#FFFFFF',
-            border: '1px solid #EAE5FF',
-            borderRadius: '12px',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <FilterIcon sx={{ fontSize: 16, color: '#B19BFD' }} />
-            <Typography
-              sx={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: '#1D1D1D',
-                fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              Filtrar archivos por estudio
-            </Typography>
-          </Box>
-          <Typography
-            sx={{
-              fontSize: 12,
-              color: '#6B6B7A',
-              fontFamily: 'Inter, sans-serif',
-              mb: 1.5,
-            }}
-          >
-            Selecciona un estudio y presiona <strong>Filtrar</strong> para ver únicamente los
-            archivos asignados a ese estudio.
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1.5 }}>
-            <Box sx={{ width: 280 }}>
-              <SharedSelect
-                placeholder="Selecciona un estudio"
-                options={empresas}
-                value={empresaFiltro}
-                onChange={setEmpresaFiltro}
-                loading={loadingEmpresas}
-              />
-            </Box>
-            <Button
-              onClick={handleAplicarFiltro}
-              disabled={!empresaFiltro}
-              startIcon={<FilterIcon sx={{ fontSize: 16 }} />}
-              sx={{
-                height: 36,
-                px: 2,
-                bgcolor: '#B19BFD',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                fontSize: 12,
-                fontFamily: 'Inter, sans-serif',
-                borderRadius: '6px',
-                textTransform: 'none',
-                boxShadow: 'none',
-                '&:hover': { bgcolor: '#9B82FC', boxShadow: 'none' },
-                '&.Mui-disabled': { bgcolor: '#EAE5FF', color: '#FFFFFF' },
-              }}
-            >
-              Filtrar
-            </Button>
-            {params.empresaId && (
-              <Button
-                onClick={() => {
-                  setEmpresaFiltro(null)
-                  setParams((p) => ({ ...p, empresaId: undefined, skip: 0 }))
-                }}
-                sx={{
-                  height: 36,
-                  px: 2,
-                  bgcolor: '#F3F0FF',
-                  color: '#1D1D1D',
-                  fontWeight: 700,
-                  fontSize: 12,
-                  fontFamily: 'Inter, sans-serif',
-                  borderRadius: '6px',
-                  textTransform: 'none',
-                  boxShadow: 'none',
-                  '&:hover': { bgcolor: '#EDE9FE', boxShadow: 'none' },
-                }}
-              >
-                Limpiar filtro
-              </Button>
-            )}
-          </Box>
-          {params.empresaId && (
-            <Typography
-              sx={{
-                mt: 1.25,
-                fontSize: 12,
-                color: '#1D1D1D',
-                fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              Mostrando archivos del estudio:{' '}
-              <strong style={{ color: '#B19BFD' }}>
-                {empresas.find((e) => e.value === params.empresaId)?.data ?? '—'}
-              </strong>
-            </Typography>
-          )}
-        </Box>
-      )} */}
+      <SharedTable
+        columns={columns}
+        data={documentos}
+        onRefresh={() => refrescarDocumentos()}
+        loading={loading}
+        searchPlaceholder="Buscar por documento ..."
+        onSearch={handleSearch}
+        onSearchInput={cancelSearch}
+        onPageChange={handlePageChange}
+        totalItems={total}
+        onFilter={() => filtrarController.abrir()}
+        onAdd={() => agregarController.abrir()}
+        actions={[
+          {
+            label: 'Ver',
+            icon: <VerIcon sx={{ fontSize: 18 }} />,
+            color: 'success',
+            onClick: (row) => visualizarController.abrir(row),
+          },
+          {
+            label: 'Aprobar',
+            icon: <AprobarIcon sx={{ fontSize: 18 }} />,
+            color: (row) =>
+              row.documentoId ? 'default' : 'success',
+            onClick: (row) => row.documentoId ? null : autorizarController.abrir(row),
+          },
+          {
+            label: 'Habilitar descarga',
+            icon: <DescargaIcon sx={{ fontSize: 18 }} />,
+            color: (row) =>
+              !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? 'default' : 'success',
+            onClick: (row) => !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? null : habilitarDescargaController.abrir(row),
+          },
+        ]}
+      />
 
-      <Box
+      {/* <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -199,12 +148,12 @@ function MainDashboard() {
             </Typography>
           </Box>
         ) : (
-          estudioDocs.map((doc, index) => (
+          estudioDocs.map((doc) => (
             <DocumentoCard
               key={crypto.randomUUID()}
               data={doc}
               fechasActualizacion={fechas}
-              fechasAprobacion={esEstudio ? null : fechasAprobacion}
+              fechasAprobacion={esEstudio ? null : aprobadosCtrl.fechasAprobacionDe(doc.asesor)}
               fechaLabel={esEstudio ? 'Última aprobación' : 'Última actualización'}
               fechaAprobacionLabel={esEstudio ? undefined : 'Última aprobación'}
               onDownload={descargar}
@@ -246,7 +195,12 @@ function MainDashboard() {
             />
           ))
         )}
-      </Box>
+      </Box> */}
+      <DashboardFilter controller={filtrarController} />
+
+      <DashboardVisualizar controller={visualizarController} />
+
+      <DashboardHabilitarDescarga controller={habilitarDescargaController} />
 
       <DashboardAgregar controller={agregarController} />
 

@@ -21,7 +21,7 @@ export interface PageResponse<T> {
 
 export interface JwtPayload {
   sub: string
-  rol: 'admin' | 'user'
+  roles: string[]
   rol_ids?: number[]
   usuario_id: string
   nombre: string,
@@ -61,7 +61,30 @@ export interface aprobarRequest {
 export interface EstudioAprobado {
     estudio: string;     // nombre del estudio
     tablas:  string[];   // tablas con al menos una fila vigente (desaprobado=false)
+    fechaAprobacion: Record<string, string | null>;
 }
+
+  export type ClienteDocumentoEstado = "nuevo" | "aprobado";
+
+  export interface ClienteDocumentoFila {
+    /** Identificador del documento (usado para habilitar descarga) */
+    documentoId?: string;
+    /** Nombre de la base (nuevo) o TT01SDOCAPRUSRESTU (aprobado) */
+    documentoNombre: string;
+    /** Asesor (nuevo) o TT01SDOCAPRARCBASE (aprobado) */
+    estudio: string;
+    /** Origen de la fila */
+    estado: ClienteDocumentoEstado;
+
+    /** Solo en 'aprobado' (TT01BDOCAPRDOCDES) */
+    descargado?: boolean;
+    /** Formato dd/MM/yyyy. En 'nuevo' = fecha base; en 'aprobado' = null por ahora */
+    fechaActualizacion?: string;
+    /** Solo en 'aprobado' (TT01DDOCAPRAPRO). Formato dd/MM/yyyy */
+    fechaAprobado?: string;
+    /** Solo en 'aprobado' (TT01SDOCAPRRUT) */
+    ruta?: string;
+  }
 
 export interface DocumentoListResponse {
     fechasAprobacion: FechasActualizacion;
