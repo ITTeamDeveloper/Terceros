@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material'
 import { fontFamily } from '../../../../shared/styles/typography'
 import type { ClienteDocumentoFila } from '../../../../services/interfaces'
+import { Tooltip } from '@mui/material'
 
 interface DocumentoCardProps {
   estudio: string
@@ -153,20 +154,24 @@ export function DocumentoCard({ estudio, documentos, fechaLabel = 'Última aprob
                         {fechaLabel ? `${fechaLabel}: ` : ''}{fecha}
                       </Typography>
                     )}
-                    <IconButton
-                      onClick={() => handleDownload(doc)}
-                      disabled={doc.descargado}
-                      aria-label={`Descargar ${doc.documentoNombre}`}
-                      sx={{
-                        color: '#B19BFD',
-                        '&:hover': { bgcolor: 'rgba(177, 155, 253, 0.12)' },
-                        '&.Mui-disabled': { color: '#B19BFD', opacity: 0.6 },
-                      }}
-                    >
-                      {isDownloading
-                        ? <CircularProgress size={18} sx={{ color: '#B19BFD' }} />
-                        : <DownloadIcon fontSize="small" />}
-                    </IconButton>
+                    <Tooltip title={doc.descargado ? 'Comunicate para que te habiliten la descarga nuevamente' : 'Descargar documento'}>
+                      <span>
+                        <IconButton
+                          onClick={() => handleDownload(doc)}
+                          disabled={doc.descargado}
+                          aria-label={`Descargar ${doc.documentoNombre}`}
+                          sx={{
+                            color: '#B19BFD',
+                            '&:hover': { bgcolor: 'rgba(177, 155, 253, 0.12)' },
+                            '&.Mui-disabled': { color: '#B19BFD', opacity: 0.6 },
+                          }}
+                        >
+                          {isDownloading
+                            ? <CircularProgress size={18} sx={{ color: '#B19BFD' }} />
+                            : <DownloadIcon fontSize="small"/>}
+                        </IconButton>
+                      </span>
+                    </Tooltip>
                   </Box>
                 </Box>
               )

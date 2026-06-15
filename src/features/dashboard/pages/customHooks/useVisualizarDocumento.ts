@@ -6,7 +6,7 @@ import { documentoServices } from '../../../../services/documentoServices'
 // Tope de celdas a renderizar: sheet_to_html arma toda la hoja como un único
 // <table>; con miles de filas/columnas el DOM es tan grande que el navegador se
 // congela al hacer scroll. Acotamos el rango para mantener la vista fluida.
-export const MAX_FILAS = 1500
+export const MAX_FILAS = 1200
 export const MAX_COLS = 60
 
 export const useVisualizarDocumento = () => {

@@ -1,6 +1,4 @@
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import {
   VisibilityOutlined as VerIcon,
@@ -41,7 +39,7 @@ function MainDashboard() {
   const visualizarController = useVisualizarDocumento()
   const habilitarDescargaController = useHabilitarDescarga({ onSuccess: refrescarDocumentos })
   const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
-  const autorizarController = useAutorizarDocumento({ onSuccess: aprobadosCtrl.refrescar })
+  const autorizarController = useAutorizarDocumento({ onSuccess: esEstudio ? aprobadosCtrl.refrescar : refrescarDocumentos })
 
   const intro = isAdmin
     ? {
