@@ -90,121 +90,91 @@ function MainDashboard() {
         <Typography sx={typo.subtitle}>{intro.description}</Typography>
       </Box>
 
-      <SharedTable
-        columns={columns}
-        data={documentos}
-        onRefresh={() => refrescarDocumentos()}
-        loading={loading}
-        searchPlaceholder="Buscar por documento ..."
-        onSearch={handleSearch}
-        onSearchInput={cancelSearch}
-        onPageChange={handlePageChange}
-        totalItems={total}
-        onFilter={() => filtrarController.abrir()}
-        onAdd={() => agregarController.abrir()}
-        actions={[
-          {
-            label: 'Ver',
-            icon: <VerIcon sx={{ fontSize: 18 }} />,
-            color: 'success',
-            onClick: (row) => visualizarController.abrir(row),
-          },
-          {
-            label: 'Aprobar',
-            icon: <AprobarIcon sx={{ fontSize: 18 }} />,
-            color: (row) =>
-              row.documentoId ? 'default' : 'success',
-            onClick: (row) => row.documentoId ? null : autorizarController.abrir(row),
-          },
-          {
-            label: 'Habilitar descarga',
-            icon: <DescargaIcon sx={{ fontSize: 18 }} />,
-            color: (row) =>
-              !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? 'default' : 'success',
-            onClick: (row) => !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? null : habilitarDescargaController.abrir(row),
-          },
-        ]}
-      />
-
-      {/* <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-        }}
-      >
-        {estudioDocs.length === 0 ? (
+      {
+        isAdmin ? (
+          <>
+          <SharedTable
+            columns={columns}
+            data={documentos}
+            onRefresh={() => refrescarDocumentos()}
+            loading={loading}
+            searchPlaceholder="Buscar por documento ..."
+            onSearch={handleSearch}
+            onSearchInput={cancelSearch}
+            onPageChange={handlePageChange}
+            totalItems={total}
+            onFilter={() => filtrarController.abrir()}
+            onAdd={() => agregarController.abrir()}
+            actions={[
+              {
+                label: 'Ver',
+                icon: <VerIcon sx={{ fontSize: 18 }} />,
+                color: 'success',
+                onClick: (row) => visualizarController.abrir(row),
+              },
+              {
+                label: 'Aprobar',
+                icon: <AprobarIcon sx={{ fontSize: 18 }} />,
+                color: (row) =>
+                  row.documentoId ? 'default' : 'success',
+                onClick: (row) => row.documentoId ? null : autorizarController.abrir(row),
+              },
+              {
+                label: 'Habilitar descarga',
+                icon: <DescargaIcon sx={{ fontSize: 18 }} />,
+                color: (row) =>
+                  !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? 'default' : 'success',
+                onClick: (row) => !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? null : habilitarDescargaController.abrir(row),
+              },
+            ]}
+          />
+          
+          <DashboardFilter controller={filtrarController} />
+          <DashboardVisualizar controller={visualizarController} />
+          <DashboardHabilitarDescarga controller={habilitarDescargaController} />
+          <DashboardAgregar controller={agregarController} />
+          <DashboardAutorizar controller={autorizarController} />
+          </>
+        ):
+        (
           <Box
             sx={{
-              p: 3,
-              bgcolor: '#FFFFFF',
-              border: '1px solid #EAE5FF',
-              borderRadius: '16px',
-              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1.5,
             }}
           >
-            <Typography sx={{ ...typo.subtitle }}>
-              No hay documentos disponibles.
-            </Typography>
+            {documentos.length === 0 ? (
+              <Box
+                sx={{
+                  p: 3,
+                  bgcolor: '#FFFFFF',
+                  border: '1px solid #EAE5FF',
+                  borderRadius: '16px',
+                  textAlign: 'center',
+                }}
+              >
+                <Typography sx={{ ...typo.subtitle }}>
+                  No hay documentos disponibles.
+                </Typography>
+              </Box>
+            ) : (
+              <DocumentoCard
+                estudio={documentos[0].estudio}
+                documentos={documentos}
+                fechaLabel={esEstudio ? 'Última aprobación' : 'Última actualización'}
+                onDownload={descargar}
+                onReload={refrescarDocumentos}
+              />
+            )}
           </Box>
-        ) : (
-          estudioDocs.map((doc) => (
-            <DocumentoCard
-              key={crypto.randomUUID()}
-              data={doc}
-              fechasActualizacion={fechas}
-              fechasAprobacion={esEstudio ? null : aprobadosCtrl.fechasAprobacionDe(doc.asesor)}
-              fechaLabel={esEstudio ? 'Última aprobación' : 'Última actualización'}
-              fechaAprobacionLabel={esEstudio ? undefined : 'Última aprobación'}
-              onDownload={descargar}
-              onAprobar={
-                esEstudio
-                  ? undefined
-                  : (asesor, base) =>
-                      autorizarController.abrir({
-                        aprobar: !aprobadosCtrl.estaAprobado(asesor, base),
-                        estudio: asesor,
-                        tabla: base.toUpperCase(),
-                      })
-              }
-              estaAprobado={
-                aprobadosCtrl.habilitado
-                  ? (base) => aprobadosCtrl.estaAprobado(doc.asesor, base)
-                  : undefined
-              }
-              panel={{
-                show: !esEstudio,
-                button: (
-                  <Tooltip title="Agregar documento">
-                    <IconButton
-                      onClick={() => agregarController.abrir(doc.asesor)}
-                      aria-label="Agregar documento"
-                      sx={{
-                        bgcolor: '#B19BFD',
-                        color: '#FFFFFF',
-                        width: 32,
-                        height: 32,
-                        '&:hover': { bgcolor: '#9B82FC' },
-                      }}
-                    >
-                      <AddIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                ),
-              }}
-            />
-          ))
-        )}
-      </Box> */}
-      <DashboardFilter controller={filtrarController} />
 
-      <DashboardVisualizar controller={visualizarController} />
+        )
+      }
 
-      <DashboardHabilitarDescarga controller={habilitarDescargaController} />
 
-      <DashboardAgregar controller={agregarController} />
 
-      <DashboardAutorizar controller={autorizarController} />
+
 
       <AppMessage
         open={descargarFeedback.open}

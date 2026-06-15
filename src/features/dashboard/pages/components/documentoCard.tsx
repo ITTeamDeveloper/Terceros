@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
@@ -7,89 +7,38 @@ import CircularProgress from '@mui/material/CircularProgress'
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
   Download as DownloadIcon,
-  Check as CheckIcon,
-  Close as CloseIcon,
 } from '@mui/icons-material'
 import { fontFamily } from '../../../../shared/styles/typography'
-import type { ClienteDocumento, FechasActualizacion } from '../../../../services/interfaces'
-
-export type DocumentoBaseKey = Exclude<keyof ClienteDocumento, 'asesor' | 'otros'>
-
-interface PanelTrigger {
-  button: ReactNode
-  show: boolean
-}
+import type { ClienteDocumentoFila } from '../../../../services/interfaces'
 
 interface DocumentoCardProps {
-  data: ClienteDocumento
-  fechasActualizacion?: FechasActualizacion | null
-  fechasAprobacion?: FechasActualizacion | null
+  estudio: string
+  documentos: ClienteDocumentoFila[]
   fechaLabel?: string
-  fechaAprobacionLabel?: string
-  onDownload?: (asesor: string, base: string) => Promise<void> | void
-  onAprobar?: (asesor: string, base: string, label: string) => void
-  estaAprobado?: (base: string) => boolean
-  panel?: PanelTrigger
+  onDownload?: (estudio: string, documentoNombre: string, documentoId?: string) => Promise<void> | void
+  onReload?: () => void
 }
 
-const formatFecha = (iso: string | null | undefined): string | null => {
-  if (!iso) return null
-  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
-  if (!m) return null
-  const [, y, mo, d, h, mi] = m
-  return `${d}/${mo}/${y} ${h}:${mi}`
-}
+const claveDoc = (doc: ClienteDocumentoFila) => doc.documentoId ?? doc.documentoNombre
 
-const buscarFecha = (
-  fechas: FechasActualizacion | null | undefined,
-  key: string,
-): string | null => {
-  if (!fechas) return null
-  const upper = key.toUpperCase()
-  for (const [k, v] of Object.entries(fechas)) {
-    if (k === 'otros') continue
-    if (k.toUpperCase() === upper) return (v as string | null) ?? null
-  }
-  for (const [k, v] of Object.entries(fechas.otros ?? {})) {
-    if (k.toUpperCase() === upper) return v ?? null
-  }
-  return null
-}
-
-const BLOCK_LABELS: Record<DocumentoBaseKey, string> = {
-  baseAsignacion: 'Base Asignación',
-  baseCDH: 'Base CDH',
-  baseTelefono: 'Base Teléfono',
-}
-
-export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fechaLabel, fechaAprobacionLabel, onDownload, onAprobar, estaAprobado, panel }: DocumentoCardProps) {
-  const [open, setOpen] = useState(false)
+export function DocumentoCard({ estudio, documentos, fechaLabel = 'Última aprobación', onDownload, onReload }: DocumentoCardProps) {
+  const [open, setOpen] = useState(true)
   const [downloading, setDownloading] = useState<Set<string>>(new Set())
 
-  const baseBlocks = (
-    Object.entries(BLOCK_LABELS) as [DocumentoBaseKey, string][]
-  )
-    .filter(([key]) => data[key] === true)
-    .map(([key, label]) => ({ key, label }))
-
-  const otrosBlocks = Object.entries(data.otros ?? {})
-    .filter(([, val]) => val === true)
-    .map(([key]) => ({ key, label: key }))
-
-  const visibleBlocks = [...baseBlocks, ...otrosBlocks]
-
-  const handleDownload = async (key: string) => {
+  const handleDownload = async (doc: ClienteDocumentoFila) => {
+    const key = claveDoc(doc)
     if (!onDownload || downloading.has(key)) return
 
     setDownloading((prev) => new Set(prev).add(key))
     try {
-      await onDownload(data.asesor, key)
+      await onDownload(estudio, doc.documentoNombre, doc.documentoId)
     } finally {
       setDownloading((prev) => {
         const next = new Set(prev)
         next.delete(key)
         return next
       })
+      onReload?.()
     }
   }
 
@@ -121,30 +70,25 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
             color: '#1D1D1D',
           }}
         >
-          {data.asesor}
+          {estudio}
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          {panel?.show && panel.button}
-
-          <IconButton
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? 'Cerrar' : 'Abrir'}
-            sx={{
-              transition: 'transform 0.2s ease',
-              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-              color: '#1D1D1D',
-            }}
-          >
-            <KeyboardArrowDownIcon />
-          </IconButton>
-        </Box>
+        <IconButton
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? 'Cerrar' : 'Abrir'}
+          sx={{
+            transition: 'transform 0.2s ease',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            color: '#1D1D1D',
+          }}
+        >
+          <KeyboardArrowDownIcon />
+        </IconButton>
       </Box>
 
       {/* Collapsible content */}
       <Collapse in={open}>
         <Box
-          key={crypto.randomUUID()}
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -155,7 +99,7 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
             borderTop: '1px solid #EEEEEE',
           }}
         >
-          {visibleBlocks.length === 0 ? (
+          {documentos.length === 0 ? (
             <Typography
               sx={{
                 fontFamily: fontFamily.body,
@@ -166,13 +110,13 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
               Sin documentos disponibles.
             </Typography>
           ) : (
-            visibleBlocks.map(({ key, label }) => {
+            documentos.map((doc) => {
+              const key = claveDoc(doc)
               const isDownloading = downloading.has(key)
-              const fechaFmt = formatFecha(buscarFecha(fechasActualizacion, key))
-              const fechaAprobacionFmt = formatFecha(buscarFecha(fechasAprobacion, key))
+              const fecha = doc.fechaAprobado ?? doc.fechaActualizacion
               return (
                 <Box
-                  key={crypto.randomUUID()}
+                  key={key}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -191,11 +135,11 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
                       color: '#1D1D1D',
                     }}
                   >
-                    {label}
+                    {doc.documentoNombre}
                   </Typography>
 
-                  <Box key={crypto.randomUUID()} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {(fechaFmt || fechaAprobacionFmt) && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {fecha && (
                       <Typography
                         sx={{
                           fontFamily: fontFamily.body,
@@ -206,23 +150,13 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        {fechaFmt && (
-                          <>
-                            {fechaLabel ? `${fechaLabel}: ` : ''}{fechaFmt}
-                          </>
-                        )}
-                        {fechaFmt && fechaAprobacionFmt && ' - '}
-                        {fechaAprobacionFmt && (
-                          <>
-                            {fechaAprobacionLabel ? `${fechaAprobacionLabel}: ` : ''}{fechaAprobacionFmt}
-                          </>
-                        )}
+                        {fechaLabel ? `${fechaLabel}: ` : ''}{fecha}
                       </Typography>
                     )}
                     <IconButton
-                      onClick={() => handleDownload(key)}
-                      disabled={isDownloading || !onDownload}
-                      aria-label={`Descargar ${label}`}
+                      onClick={() => handleDownload(doc)}
+                      disabled={doc.descargado}
+                      aria-label={`Descargar ${doc.documentoNombre}`}
                       sx={{
                         color: '#B19BFD',
                         '&:hover': { bgcolor: 'rgba(177, 155, 253, 0.12)' },
@@ -233,29 +167,6 @@ export function DocumentoCard({ data, fechasActualizacion, fechasAprobacion, fec
                         ? <CircularProgress size={18} sx={{ color: '#B19BFD' }} />
                         : <DownloadIcon fontSize="small" />}
                     </IconButton>
-
-                    {onAprobar && (() => {
-                      const aprobado = estaAprobado?.(key) ?? false
-                      const bg = aprobado ? '#B19BFD' : '#C7C7CF'
-                      const hoverBg = aprobado ? '#9B82FC' : '#ABABB5'
-                      return (
-                        <IconButton
-                          onClick={() => onAprobar(data.asesor, key, label)}
-                          aria-label={aprobado ? `Desaprobar ${label}` : `Aprobar ${label}`}
-                          sx={{
-                            bgcolor: bg,
-                            color: '#FFFFFF',
-                            width: 32,
-                            height: 32,
-                            '&:hover': { bgcolor: hoverBg },
-                          }}
-                        >
-                          {aprobado
-                            ? <CloseIcon fontSize="small" />
-                            : <CheckIcon fontSize="small" />}
-                        </IconButton>
-                      )
-                    })()}
                   </Box>
                 </Box>
               )

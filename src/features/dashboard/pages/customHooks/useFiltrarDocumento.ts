@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import type { ComboOption } from "../../../../shared/components";
 import { estudioServices } from "../../../../services/estudioServices";
+import { useAuth } from "../../../auth/context/AuthContext";
+
+const ROL_ADMIN = 20;
 
 export interface filterResponse {
   estudio?: string;
@@ -12,6 +15,8 @@ interface UseFiltrarDocumentoArgs {
 }
 
 export const useFiltrarDocumento = ({ onApply }: UseFiltrarDocumentoArgs = {}) => {
+  const { payload } = useAuth();
+  const esAdmin = payload?.rol_ids?.[0] === ROL_ADMIN;
   const [estudioData, setEstudioData] = useState<ComboOption[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [filterSelected, setFilterSelected] = useState<filterResponse>({});
@@ -46,8 +51,8 @@ export const useFiltrarDocumento = ({ onApply }: UseFiltrarDocumentoArgs = {}) =
   };
 
   useEffect(() => {
-    getEstudio();
-  }, []);
+    if (esAdmin) getEstudio();
+  }, [esAdmin]);
 
   return { estudioData, open, abrir, cerrar, limpiar, aplicar, setFilterSelected, filterSelected };
 };

@@ -2,14 +2,14 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { SharedPanel } from '../../../../shared/components'
-import { useVisualizarDocumento } from '../customHooks/useVisualizarDocumento'
+import { MAX_COLS, MAX_FILAS, useVisualizarDocumento } from '../customHooks/useVisualizarDocumento'
 
 interface DashboardVisualizarProps {
   controller: ReturnType<typeof useVisualizarDocumento>
 }
 
 export const DashboardVisualizar = ({ controller }: DashboardVisualizarProps) => {
-  const { open, loading, error, html, titulo, cerrar } = controller
+  const { open, loading, error, html, titulo, truncado, cerrar } = controller
 
   return (
     <SharedPanel
@@ -31,10 +31,23 @@ export const DashboardVisualizar = ({ controller }: DashboardVisualizarProps) =>
           </Typography>
         </Box>
       ) : html ? (
-        <Box
-          onContextMenu={(e) => e.preventDefault()}
-          dangerouslySetInnerHTML={{ __html: html }}
-          sx={{
+        <>
+          {/* {truncado && (
+            <Typography
+              sx={{
+                fontSize: 12,
+                color: '#7A7390',
+                fontFamily: 'Inter, sans-serif',
+                mb: 1,
+              }}
+            >
+              Vista previa limitada a las primeras {MAX_FILAS} filas y {MAX_COLS} columnas.
+            </Typography>
+          )} */}
+          <Box
+            onContextMenu={(e) => e.preventDefault()}
+            dangerouslySetInnerHTML={{ __html: html }}
+            sx={{
             maxHeight: '80vh',
             overflow: 'auto',
             userSelect: 'none',
@@ -60,7 +73,8 @@ export const DashboardVisualizar = ({ controller }: DashboardVisualizarProps) =>
               bgcolor: '#F3F0FF',
             },
           }}
-        />
+          />
+        </>
       ) : null}
     </SharedPanel>
   )

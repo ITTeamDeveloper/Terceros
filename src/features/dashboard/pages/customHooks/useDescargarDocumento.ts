@@ -13,9 +13,9 @@ export const useDescargarDocumento = () => {
 
     const cerrarFeedback = () => setFeedback((f) => ({ ...f, open: false }))
 
-    const descargar = async (asesorNombre: string, tablaNombre: string) => {
+    const descargar = async (asesorNombre: string, tablaNombre: string, documentoId?: string) => {
         try {
-            await documentoServices.descargar(asesorNombre, tablaNombre);
+            await documentoServices.descargar(asesorNombre, tablaNombre, documentoId);
         } catch (error) {
             const axiosErr = error as AxiosError<Blob | { message?: string; error?: string }>
             const statusCode = axiosErr.response?.status ?? 500

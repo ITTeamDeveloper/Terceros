@@ -144,7 +144,7 @@ const aprobarDescarga = async (
   aprobar : boolean,
   documentoId: string
 ) => {
-  const {data} = await api.put('cliente/aprobarDescarga', {params: {aprobar, documentoId}})
+  const {data} = await api.put('cliente/aprobarDescarga', {aprobar, documentoId})
 
   return data;
 }

@@ -20,14 +20,28 @@ export const useListarDocumentos = ({ rolId }: UseListarDocumentosArgs = {}) => 
   const [params, setParams] = useState<IDocumentoTable>({ search: '', skip: 0, take: 10 })
   const [total, setTotal] = useState<number>(0);
   const loadAbortRef = useRef<AbortController | null>(null)
+  const usarAprobados = rolId === ROL_ESTUDIO
+
   const cargar = useCallback(
     async (signal?: AbortSignal) => {
       setLoading(true)
       setError(null)
       try {
-        const data = await documentoServices.listar(params, signal)
-        setDocumentos(data?.data);
-        setTotal(data?.total);
+
+        let filas: ClienteDocumentoFila[]
+        let totalFilas: number
+        if (usarAprobados) {
+          const data = await documentoServices.documentoAprobados(signal)
+          filas = data
+          totalFilas = filas.length
+        } else {
+          const page = await documentoServices.listar(params, signal)
+          filas = page.data
+          totalFilas = page.total
+        }
+
+        setDocumentos(filas ?? [])
+        setTotal(totalFilas ?? 0)
       } catch (err) {
         if ((err as { name?: string })?.name === 'CanceledError') return
         console.error('Error al listar documentos:', err)

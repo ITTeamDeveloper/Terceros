@@ -3,14 +3,18 @@ import { documentoServices } from '../../../../services/documentoServices'
 import { usePanelFeedback } from '../../../../shared/hooks/usePanelFeedback'
 import { estudioServices } from '../../../../services/estudioServices'
 import type { ComboOption } from '../../../../shared/components'
+import { useAuth } from '../../../auth/context/AuthContext'
 
 const MAX_ARCHIVOS = 4
+const ROL_ADMIN = 20
 
 interface UseAgregarDocumentoArgs {
   onSuccess?: () => void | Promise<void>
 }
 
 export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {}) {
+  const { payload } = useAuth()
+  const esAdmin = payload?.rol_ids?.[0] === ROL_ADMIN
   const [open, setOpen] = useState(false)
   const [archivos, setArchivos] = useState<File[]>([])
   const [estudio, setEstudio] = useState<string | null>(null)
@@ -28,8 +32,8 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
   }
 
   useEffect(()=> {
-    getEstudio();
-  },[])
+    if (esAdmin) getEstudio();
+  },[esAdmin])
 
   const limpiar = () => {
     setOpen(false)
