@@ -26,13 +26,13 @@ import { useHabilitarDescarga } from './customHooks/useHabilitarDescarga'
 import { DashboardHabilitarDescarga } from './components/dashboardHabilitarDescarga'
 
 
-function MainDashboard() {
+function AsignacionesHistoricas() {
   const { payload } = useAuth()
   const isAdmin = payload?.roles.includes('SUPERVISOR_ESTUDIOS');
   const rolId = payload?.rol_ids?.[0]
   const esEstudio = rolId === 17
 
-  const { documentos, total,cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolId, aprobados: false})
+  const { documentos, total, cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolId, aprobados: true })
   const { descargar, feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
   const aprobadosCtrl = useDocumentosAprobados({ rolId })
   const filtrarController = useFiltrarDocumento({ onApply: handleFilter })
@@ -41,15 +41,12 @@ function MainDashboard() {
   const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
   const autorizarController = useAutorizarDocumento({ onSuccess: esEstudio ? aprobadosCtrl.refrescar : refrescarDocumentos })
 
-  const intro = isAdmin
-    ? {
-      title: 'Gestión de documentos',
-      description: 'Revisa, valida y aprueba los documentos que serán visibles para terceros.',
+  const intro =
+    {
+      title: 'Documentos aprobados',
+      description: 'Aquí puedes consultar y ver los archivos aprobados.',
     }
-    : {
-      title: 'Documentos disponibles',
-      description: 'Aquí puedes consultar y descargar los archivos aprobados y vigentes de tu estudio.',
-    }
+
 
   const columns: ColumnDef<ClienteDocumentoFila>[] = [
     { label: 'Estudio', key: 'estudio' },
@@ -68,8 +65,8 @@ function MainDashboard() {
             fontSize: 12,
             fontWeight: 600,
             textTransform: 'capitalize',
-            color: value === 'nuevo' ? '#572bf7' : '#007704a8',
-            bgcolor: value === 'nuevo' ? '#d0c4fd' : '#aed6af',
+            color: '#007704a8',
+            bgcolor: '#aed6af',
           }}
         >
           {value}
@@ -88,84 +85,37 @@ function MainDashboard() {
         <Typography sx={typo.subtitle}>{intro.description}</Typography>
       </Box>
 
-      {
-        isAdmin ? (
-          <>
-          <SharedTable
-            columns={columns}
-            data={documentos}
-            onRefresh={() => refrescarDocumentos()}
-            loading={loading}
-            searchPlaceholder="Buscar por documento ..."
-            onSearch={handleSearch}
-            onSearchInput={cancelSearch}
-            onPageChange={handlePageChange}
-            totalItems={total}
-            onFilter={() => filtrarController.abrir()}
-            onAdd={() => agregarController.abrir()}
-            actions={[
-              {
-                label: 'Ver',
-                icon: <VerIcon sx={{ fontSize: 18 }} />,
-                color: 'success',
-                onClick: (row) => visualizarController.abrir(row),
-              },
-              {
-                label: 'Aprobar',
-                icon: <AprobarIcon sx={{ fontSize: 18 }} />,
-                color: (row) =>
-                  row.documentoId ? 'default' : 'success',
-                onClick: (row) => row.documentoId ? null : autorizarController.abrir(row),
-              }
-            ]}
-          />
-          
-          <DashboardFilter controller={filtrarController} ocultarEstado/>
-          <DashboardVisualizar controller={visualizarController} />
-          <DashboardHabilitarDescarga controller={habilitarDescargaController} />
-          <DashboardAgregar controller={agregarController} />
-          <DashboardAutorizar controller={autorizarController} />
-          </>
-        ):
-        (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-            }}
-          >
-            {documentos.length === 0 ? (
-              <Box
-                sx={{
-                  p: 3,
-                  bgcolor: '#FFFFFF',
-                  border: '1px solid #EAE5FF',
-                  borderRadius: '16px',
-                  textAlign: 'center',
-                }}
-              >
-                <Typography sx={{ ...typo.subtitle }}>
-                  No hay documentos disponibles.
-                </Typography>
-              </Box>
-            ) : (
-              <DocumentoCard
-                estudio={documentos[0].estudio}
-                documentos={documentos}
-                fechaLabel={esEstudio ? 'Última aprobación' : 'Última actualización'}
-                onDownload={descargar}
-                onReload={refrescarDocumentos}
-              />
-            )}
-          </Box>
+      <SharedTable
+        columns={columns}
+        data={documentos}
+        onRefresh={() => refrescarDocumentos()}
+        loading={loading}
+        searchPlaceholder="Buscar por documento ..."
+        onSearch={handleSearch}
+        onSearchInput={cancelSearch}
+        onPageChange={handlePageChange}
+        totalItems={total}
+        onFilter={() => filtrarController.abrir()}
+        actions={[
+          {
+            label: 'Ver',
+            icon: <VerIcon sx={{ fontSize: 18 }} />,
+            color: 'success',
+            onClick: (row) => visualizarController.abrir(row),
+          },
+          {
+            label: 'Habilitar descarga',
+            icon: <DescargaIcon sx={{ fontSize: 18 }} />,
+            color: (row) =>
+              !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? 'default' : 'success',
+            onClick: (row) => !row.documentoId || (!row.descargado && row.estado === 'aprobado') ? null : habilitarDescargaController.abrir(row),
+          },
+        ]}
+      />
 
-        )
-      }
-
-
-
-
+      <DashboardFilter controller={filtrarController} ocultarEstado />
+      <DashboardVisualizar controller={visualizarController} />
+      <DashboardHabilitarDescarga controller={habilitarDescargaController} />
 
       <AppMessage
         open={descargarFeedback.open}
@@ -177,4 +127,4 @@ function MainDashboard() {
   )
 }
 
-export default MainDashboard
+export default AsignacionesHistoricas

@@ -6,18 +6,20 @@ const ROL_ESTUDIO = 17
 
 interface UseListarDocumentosArgs {
   rolId?: number
+  aprobados?: boolean
 }
 
 interface IDocumentoTable extends ITablaParams {
   estado ?: boolean,
   estudio ?: string,
+  aprobados ?: boolean
 }
 
-export const useListarDocumentos = ({ rolId }: UseListarDocumentosArgs = {}) => {
+export const useListarDocumentos = ({ rolId, aprobados }: UseListarDocumentosArgs = {}) => {
   const [documentos, setDocumentos] = useState<ClienteDocumentoFila[]>([]);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [params, setParams] = useState<IDocumentoTable>({ search: '', skip: 0, take: 10 })
+  const [params, setParams] = useState<IDocumentoTable>({ search: '', skip: 0, take: 10, aprobados: aprobados })
   const [total, setTotal] = useState<number>(0);
   const loadAbortRef = useRef<AbortController | null>(null)
   const usarAprobados = rolId === ROL_ESTUDIO

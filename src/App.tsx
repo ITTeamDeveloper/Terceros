@@ -7,6 +7,7 @@ import MainDashboard from './features/dashboard/pages/mainDashboard'
 import Login from './features/auth/pages/Login'
 import { HistoricoDescargas } from './features/dashboard/pages/historicoDescargas'
 import { SoportePage } from './features/dashboard/pages/soportePage'
+import AsignacionesHistoricas from './features/dashboard/pages/asignacionesHistoricas'
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<MainDashboard />} />
+
+              {/* Ruta momentánea: apunta al mismo componente que "/" */}
+              <Route path="/asignaciones/aprobadas" element={<AsignacionesHistoricas />} />
 
               <Route
                 path="/historico"

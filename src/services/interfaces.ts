@@ -6,6 +6,7 @@ export interface ITablaParams {
   search?: string
   skip?: number
   take?: number
+  aprobados?: boolean | null
 }
 
 export interface PageResponse<T> {
