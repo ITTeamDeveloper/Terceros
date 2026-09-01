@@ -16,7 +16,6 @@ import {
   Add as AddIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
-  Filter,
   FilterAlt,
   InboxOutlined as InboxIcon,
   RefreshOutlined as RefreshIcon,

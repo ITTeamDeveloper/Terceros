@@ -8,14 +8,20 @@ import {
   UploadFileOutlined as UploadFileIcon,
 } from '@mui/icons-material'
 import { SharedPanel, SharedSelect } from '../../../../shared/components'
+import type { ComboOption } from '../../../../shared/components'
 import type { useAgregarDocumento } from '../customHooks/useAgregarDocumento'
-import { colors } from '@mui/material'
 
 interface DashboardAgregarProps {
   controller: ReturnType<typeof useAgregarDocumento>
+  estudioData: ComboOption[]
+  loadingEstudios?: boolean
 }
 
-export function DashboardAgregar({ controller }: DashboardAgregarProps) {
+export function DashboardAgregar({
+  controller,
+  estudioData,
+  loadingEstudios = false,
+}: DashboardAgregarProps) {
   const {
     open,
     archivos,
@@ -30,7 +36,6 @@ export function DashboardAgregar({ controller }: DashboardAgregarProps) {
     volverAEditar,
     agregarArchivos,
     quitarArchivo,
-    estudioData,
     setEstudio,
   } = controller
 
@@ -148,7 +153,7 @@ export function DashboardAgregar({ controller }: DashboardAgregarProps) {
               options={estudioData}
               value={estudioData.find((o) => o.data === estudio) ?? null}  
               onChange={(v) => setEstudio(v?.data ?? null)}
-              key={crypto.randomUUID()}
+              loading={loadingEstudios}
             />
           </Box>
         </Box>

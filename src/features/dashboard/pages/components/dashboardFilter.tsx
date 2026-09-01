@@ -1,11 +1,12 @@
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { SharedPanel, SharedSelect, type ComboOption } from "../../../../shared/components";
-import { useFiltrarDocumento } from "../customHooks/useFiltrarDocumento";
+import type { useFiltrarDocumento } from "../customHooks/useFiltrarDocumento";
 
 interface DashboardFilterProps {
   controller: ReturnType<typeof useFiltrarDocumento>
+  estudioData: ComboOption[]
+  loadingEstudios?: boolean
   ocultarEstado?: boolean
 }
 
@@ -19,8 +20,13 @@ const estadoOptions: ComboOption[] = [
         value: 'true'
     }
 ]
-export const DashboardFilter = ({controller, ocultarEstado = false}: DashboardFilterProps) => {
-    const {open, cerrar, estudioData, aplicar, setFilterSelected, filterSelected} = controller
+export const DashboardFilter = ({
+    controller,
+    estudioData,
+    loadingEstudios = false,
+    ocultarEstado = false,
+}: DashboardFilterProps) => {
+    const {open, cerrar, aplicar, setFilterSelected, filterSelected} = controller
     return (
         <SharedPanel
             open={open}
@@ -47,6 +53,7 @@ export const DashboardFilter = ({controller, ocultarEstado = false}: DashboardFi
                             options={estudioData}
                             value={estudioData.find((o) => o.data === filterSelected?.estudio) ?? null}
                             onChange={(v) => setFilterSelected({...filterSelected, estudio: v?.data})}
+                            loading={loadingEstudios}
                         />
                     </Box>
                 </Box>

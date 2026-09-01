@@ -1,3 +1,5 @@
+import type { RolId } from '../shared/utils/roles'
+
 // ============================================================
 // Tabla
 // ============================================================
@@ -23,7 +25,7 @@ export interface PageResponse<T> {
 export interface JwtPayload {
   sub: string
   roles: string[]
-  rol_ids?: number[]
+  rol_ids?: RolId[]
   usuario_id: string
   nombre: string,
   empresa:string,

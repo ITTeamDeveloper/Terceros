@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { AxiosError } from 'axios'
 import { soporteServices } from '../../../../services/soporteServices'
 import { useAuth } from '../../../auth/context/AuthContext'
+import { ROLES, tieneRolSupervisor } from '../../../../shared/utils/roles'
 
 interface FeedbackState {
   open: boolean
@@ -17,7 +18,7 @@ export interface SoporteTemplate {
 
 const DEFAULT_SUBJECT = 'reporte-terceros'
 
-const TEMPLATES_ROL_20: SoporteTemplate[] = [
+const TEMPLATES_SUPERVISOR: SoporteTemplate[] = [
   {
     subject: 'Error al subir documento',
     description: 'Reporta cuando un documento no se logra subir al estudio.',
@@ -44,7 +45,7 @@ const TEMPLATES_ROL_20: SoporteTemplate[] = [
   },
 ]
 
-const templatesRol17 = (estudio: string): SoporteTemplate[] => [
+const templatesEstudio = (estudio: string): SoporteTemplate[] => [
   {
     subject: 'Error al descargar documento',
     description: 'Reporta cuando no logras descargar un documento autorizado.',
@@ -60,10 +61,15 @@ const templatesRol17 = (estudio: string): SoporteTemplate[] => [
 export function useSoporte() {
   const { payload } = useAuth()
   const rolId = payload?.rol_ids?.[0]
+  const esAdmin = tieneRolSupervisor(payload?.rol_ids)
   const estudio = payload?.empresa ?? ''
 
   const templates: SoporteTemplate[] =
-    rolId === 20 ? TEMPLATES_ROL_20 : rolId === 17 ? templatesRol17(estudio) : []
+    esAdmin
+      ? TEMPLATES_SUPERVISOR
+      : rolId === ROLES.ROL_ESTUDIO
+        ? templatesEstudio(estudio)
+        : []
 
   const [subject, setSubject] = useState(DEFAULT_SUBJECT)
   const [message, setMessage] = useState('')

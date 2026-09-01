@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import { Logout as LogoutIcon } from '@mui/icons-material'
 import { useAuth } from '../../features/auth/context/AuthContext'
+import { tieneRolSupervisor } from '../utils/roles'
 
 interface UserInfoProps {
   variant?: 'topbar' | 'sidebar'
@@ -24,7 +25,7 @@ export function UserInfo({ variant = 'topbar' }: UserInfoProps) {
   }
 
   const name = payload?.nombre ?? 'Invitado'
-  const company = payload?.empresa ?? (payload?.rol === 'admin' ? 'Administrador' : '—')
+  const company = payload?.empresa ?? (tieneRolSupervisor(payload?.rol_ids) ? 'Administrador' : '—')
   const initial = name.charAt(0).toUpperCase() || '?'
 
   const avatar = (size: number, fontSize: number) => (

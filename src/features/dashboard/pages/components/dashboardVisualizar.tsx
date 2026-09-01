@@ -2,14 +2,14 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { SharedPanel } from '../../../../shared/components'
-import { MAX_COLS, MAX_FILAS, useVisualizarDocumento } from '../customHooks/useVisualizarDocumento'
+import { useVisualizarDocumento } from '../customHooks/useVisualizarDocumento'
 
 interface DashboardVisualizarProps {
   controller: ReturnType<typeof useVisualizarDocumento>
 }
 
 export const DashboardVisualizar = ({ controller }: DashboardVisualizarProps) => {
-  const { open, loading, error, html, titulo, truncado, cerrar } = controller
+  const { open, loading, error, html, titulo, cerrar } = controller
 
   return (
     <SharedPanel

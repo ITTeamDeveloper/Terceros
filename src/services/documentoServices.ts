@@ -1,11 +1,7 @@
 import { api } from './services'
 import type {
   aprobarRequest,
-  DocumentoListResponse,
   ClienteDocumentoFila,
-  EstudioAprobado,
-  FechasActualizacion,
-  IDocumentoListParams,
   ITablaParams,
   PageResponse,
 } from './interfaces'
@@ -59,28 +55,6 @@ const aprobar = async (data: aprobarRequest) => {
   return response.data
 }
 
-interface ClienteDocumentoAprobadoRaw {
-  asesor: string
-  baseAsignacion: boolean
-  baseCDH: boolean
-  baseTelefono: boolean
-  otras?: Record<string, boolean>
-  otros?: Record<string, boolean>
-}
-
-type RespuestaDocumentosRaw =
-  | ClienteDocumentoAprobadoRaw[]
-  | {
-      asesores: ClienteDocumentoAprobadoRaw[]
-      fechasActualizacion?: FechasActualizacion
-      fechasAprobacion?: FechasActualizacion
-    }
-
-const fechasVacias = (): FechasActualizacion => ({
-  baseAsignacion: null,
-  baseCDH: null,
-  baseTelefono: null,
-})
 
 // const normalizarRespuestaDocumentos = (data: RespuestaDocumentosRaw): DocumentoListResponse => {
 //   const rawAsesores = Array.isArray(data) ? data : data.asesores ?? []
@@ -110,15 +84,6 @@ const documentoAprobados = async (
     'clientes/documentosAprobados',
     { signal },
   )
-  return data
-}
-
-const listadocumentosAprobados = async (
-  signal?: AbortSignal,
-): Promise<EstudioAprobado[]> => {
-  const { data } = await api.get<EstudioAprobado[]>('cliente/documento/listaAprobados', {
-    signal,
-  })
   return data
 }
 
@@ -155,7 +120,6 @@ export const documentoServices = {
   descargar,
   aprobar,
   documentoAprobados,
-  listadocumentosAprobados,
   agregarDocumento,
   aprobarDescarga
 }

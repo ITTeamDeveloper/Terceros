@@ -1,45 +1,48 @@
+import { lazy, Suspense } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import {
   VisibilityOutlined as VerIcon,
-  CheckOutlined as AprobarIcon,
   DownloadOutlined as DescargaIcon,
 } from '@mui/icons-material'
 import { AppMessage, SharedTable } from '../../../shared/components'
 import { typo } from '../../../shared/styles/typography'
 import { useAuth } from '../../auth/context/AuthContext'
-import { DashboardAgregar } from './components/dashboardAgregar'
-import { DashboardAutorizar } from './components/dashboardAutorizar'
-import { DocumentoCard } from './components/documentoCard'
 import { useListarDocumentos } from './customHooks/useListarDocumentos'
 import { useDescargarDocumento } from './customHooks/useDescargarDocumento'
-import { useAgregarDocumento } from './customHooks/useAgregarDocumento'
-import { useAutorizarDocumento } from './customHooks/useAutorizarDocumento'
-import { useDocumentosAprobados } from './customHooks/useDocumentosAprobados'
 import type { ColumnDef } from '../../../shared/types/table.types'
 import type { ClienteDocumentoFila } from '../../../services/interfaces'
 import { useFiltrarDocumento } from './customHooks/useFiltrarDocumento'
-import { DashboardFilter } from './components/dashboardFilter'
 import { useVisualizarDocumento } from './customHooks/useVisualizarDocumento'
-import { DashboardVisualizar } from './components/dashboardVisualizar'
 import { useHabilitarDescarga } from './customHooks/useHabilitarDescarga'
-import { DashboardHabilitarDescarga } from './components/dashboardHabilitarDescarga'
+import { useEstudios } from './customHooks/useEstudios'
 
+const DashboardFilter = lazy(() =>
+  import('./components/dashboardFilter').then((module) => ({ default: module.DashboardFilter })),
+)
+const DashboardVisualizar = lazy(() =>
+  import('./components/dashboardVisualizar').then((module) => ({ default: module.DashboardVisualizar })),
+)
+const DashboardHabilitarDescarga = lazy(() =>
+  import('./components/dashboardHabilitarDescarga').then((module) => ({
+    default: module.DashboardHabilitarDescarga,
+  })),
+)
 
 function AsignacionesHistoricas() {
   const { payload } = useAuth()
-  const isAdmin = payload?.roles.includes('SUPERVISOR_ESTUDIOS');
-  const rolId = payload?.rol_ids?.[0]
-  const esEstudio = rolId === 17
 
-  const { documentos, total, cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolId, aprobados: true })
-  const { descargar, feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
-  const aprobadosCtrl = useDocumentosAprobados({ rolId })
+  const { documentos, total, cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolIds: payload?.rol_ids, aprobados: true })
+  const { feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
   const filtrarController = useFiltrarDocumento({ onApply: handleFilter })
   const visualizarController = useVisualizarDocumento()
   const habilitarDescargaController = useHabilitarDescarga({ onSuccess: refrescarDocumentos })
-  const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
-  const autorizarController = useAutorizarDocumento({ onSuccess: esEstudio ? aprobadosCtrl.refrescar : refrescarDocumentos })
+  const estudiosController = useEstudios()
+
+  const abrirFiltro = () => {
+    filtrarController.abrir()
+    void estudiosController.cargarEstudios()
+  }
 
   const intro =
     {
@@ -95,7 +98,7 @@ function AsignacionesHistoricas() {
         onSearchInput={cancelSearch}
         onPageChange={handlePageChange}
         totalItems={total}
-        onFilter={() => filtrarController.abrir()}
+        onFilter={abrirFiltro}
         actions={[
           {
             label: 'Ver',
@@ -113,9 +116,22 @@ function AsignacionesHistoricas() {
         ]}
       />
 
-      <DashboardFilter controller={filtrarController} ocultarEstado />
-      <DashboardVisualizar controller={visualizarController} />
-      <DashboardHabilitarDescarga controller={habilitarDescargaController} />
+      <Suspense fallback={null}>
+        {filtrarController.open && (
+          <DashboardFilter
+            controller={filtrarController}
+            estudioData={estudiosController.estudioData}
+            loadingEstudios={estudiosController.loading}
+            ocultarEstado
+          />
+        )}
+        {visualizarController.open && (
+          <DashboardVisualizar controller={visualizarController} />
+        )}
+        {habilitarDescargaController.open && (
+          <DashboardHabilitarDescarga controller={habilitarDescargaController} />
+        )}
+      </Suspense>
 
       <AppMessage
         open={descargarFeedback.open}

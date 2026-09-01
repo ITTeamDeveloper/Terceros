@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ClienteDocumento, ClienteDocumentoFila, FechasActualizacion, ITablaParams } from '../../../../services/interfaces'
+import type { ClienteDocumentoFila, ITablaParams } from '../../../../services/interfaces'
 import { documentoServices } from '../../../../services/documentoServices'
-
-const ROL_ESTUDIO = 17
+import { tieneRolEstudio, type RolId } from '../../../../shared/utils/roles'
 
 interface UseListarDocumentosArgs {
-  rolId?: number
+  rolIds?: readonly RolId[]
   aprobados?: boolean
 }
 
@@ -15,17 +14,20 @@ interface IDocumentoTable extends ITablaParams {
   aprobados ?: boolean
 }
 
-export const useListarDocumentos = ({ rolId, aprobados }: UseListarDocumentosArgs = {}) => {
+export const useListarDocumentos = ({ rolIds, aprobados }: UseListarDocumentosArgs = {}) => {
   const [documentos, setDocumentos] = useState<ClienteDocumentoFila[]>([]);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [params, setParams] = useState<IDocumentoTable>({ search: '', skip: 0, take: 10, aprobados: aprobados })
   const [total, setTotal] = useState<number>(0);
   const loadAbortRef = useRef<AbortController | null>(null)
-  const usarAprobados = rolId === ROL_ESTUDIO
+  const rolesDisponibles = Boolean(rolIds?.length)
+  const usarAprobados = tieneRolEstudio(rolIds)
 
   const cargar = useCallback(
     async (signal?: AbortSignal) => {
+      if (!rolesDisponibles) return
+
       setLoading(true)
       setError(null)
       try {
@@ -52,7 +54,7 @@ export const useListarDocumentos = ({ rolId, aprobados }: UseListarDocumentosArg
         setLoading(false)
       }
     },
-    [params],
+    [params, rolesDisponibles, usarAprobados],
   )
 
   useEffect(() => {

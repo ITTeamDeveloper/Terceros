@@ -18,7 +18,6 @@ export function useSidebarNav() {
     fetchSidebarItems()
   }, [])
 
-  console.log('Sidebar items:', primaryNav)
 
   return { primaryNav }
 }

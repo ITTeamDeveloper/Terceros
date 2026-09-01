@@ -1,39 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { documentoServices } from '../../../../services/documentoServices'
 import { usePanelFeedback } from '../../../../shared/hooks/usePanelFeedback'
-import { estudioServices } from '../../../../services/estudioServices'
-import type { ComboOption } from '../../../../shared/components'
-import { useAuth } from '../../../auth/context/AuthContext'
-
 const MAX_ARCHIVOS = 4
-const ROL_ADMIN = 20
 
 interface UseAgregarDocumentoArgs {
   onSuccess?: () => void | Promise<void>
 }
 
 export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {}) {
-  const { payload } = useAuth()
-  const esAdmin = payload?.rol_ids?.[0] === ROL_ADMIN
   const [open, setOpen] = useState(false)
   const [archivos, setArchivos] = useState<File[]>([])
   const [estudio, setEstudio] = useState<string | null>(null)
   const [confirmando, setConfirmando] = useState(false)
-  const [estudioData, setEstudioData] = useState<ComboOption[]>([]);
-
-  const getEstudio = async () => {
-    const listaEstudio = await estudioServices.listar();
-    const estudios = listaEstudio.map((v,i) => ({
-      data: v,
-      value: i.toString(),
-    }));
-
-    setEstudioData(estudios)
-  }
-
-  useEffect(()=> {
-    if (esAdmin) getEstudio();
-  },[esAdmin])
 
   const limpiar = () => {
     setOpen(false)
@@ -102,6 +80,5 @@ export function useAgregarDocumento({ onSuccess }: UseAgregarDocumentoArgs = {})
     quitarArchivo,
     guardar,
     setEstudio,
-    estudioData
   }
 }

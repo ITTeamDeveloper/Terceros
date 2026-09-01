@@ -1,45 +1,67 @@
+import { lazy, Suspense } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import {
   VisibilityOutlined as VerIcon,
   CheckOutlined as AprobarIcon,
-  DownloadOutlined as DescargaIcon,
 } from '@mui/icons-material'
 import { AppMessage, SharedTable } from '../../../shared/components'
 import { typo } from '../../../shared/styles/typography'
 import { useAuth } from '../../auth/context/AuthContext'
-import { DashboardAgregar } from './components/dashboardAgregar'
-import { DashboardAutorizar } from './components/dashboardAutorizar'
 import { DocumentoCard } from './components/documentoCard'
 import { useListarDocumentos } from './customHooks/useListarDocumentos'
 import { useDescargarDocumento } from './customHooks/useDescargarDocumento'
 import { useAgregarDocumento } from './customHooks/useAgregarDocumento'
 import { useAutorizarDocumento } from './customHooks/useAutorizarDocumento'
-import { useDocumentosAprobados } from './customHooks/useDocumentosAprobados'
 import type { ColumnDef } from '../../../shared/types/table.types'
 import type { ClienteDocumentoFila } from '../../../services/interfaces'
 import { useFiltrarDocumento } from './customHooks/useFiltrarDocumento'
-import { DashboardFilter } from './components/dashboardFilter'
 import { useVisualizarDocumento } from './customHooks/useVisualizarDocumento'
-import { DashboardVisualizar } from './components/dashboardVisualizar'
 import { useHabilitarDescarga } from './customHooks/useHabilitarDescarga'
-import { DashboardHabilitarDescarga } from './components/dashboardHabilitarDescarga'
+import { useEstudios } from './customHooks/useEstudios'
+import { tieneRolEstudio, tieneRolSupervisor } from '../../../shared/utils/roles'
 
+const DashboardAgregar = lazy(() =>
+  import('./components/dashboardAgregar').then((module) => ({ default: module.DashboardAgregar })),
+)
+const DashboardAutorizar = lazy(() =>
+  import('./components/dashboardAutorizar').then((module) => ({ default: module.DashboardAutorizar })),
+)
+const DashboardFilter = lazy(() =>
+  import('./components/dashboardFilter').then((module) => ({ default: module.DashboardFilter })),
+)
+const DashboardVisualizar = lazy(() =>
+  import('./components/dashboardVisualizar').then((module) => ({ default: module.DashboardVisualizar })),
+)
+const DashboardHabilitarDescarga = lazy(() =>
+  import('./components/dashboardHabilitarDescarga').then((module) => ({
+    default: module.DashboardHabilitarDescarga,
+  })),
+)
 
 function MainDashboard() {
   const { payload } = useAuth()
-  const isAdmin = payload?.roles.includes('SUPERVISOR_ESTUDIOS');
-  const rolId = payload?.rol_ids?.[0]
-  const esEstudio = rolId === 17
+  const isAdmin = tieneRolSupervisor(payload?.rol_ids)
+  const esEstudio = tieneRolEstudio(payload?.rol_ids)
 
-  const { documentos, total,cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolId, aprobados: false})
+  const { documentos, total,cancelSearch, handlePageChange, handleSearch, loading, refrescar: refrescarDocumentos, handleFilter } = useListarDocumentos({ rolIds: payload?.rol_ids, aprobados: false})
   const { descargar, feedback: descargarFeedback, cerrarFeedback: cerrarDescargarFeedback } = useDescargarDocumento()
-  const aprobadosCtrl = useDocumentosAprobados({ rolId })
   const filtrarController = useFiltrarDocumento({ onApply: handleFilter })
   const visualizarController = useVisualizarDocumento()
   const habilitarDescargaController = useHabilitarDescarga({ onSuccess: refrescarDocumentos })
   const agregarController = useAgregarDocumento({ onSuccess: refrescarDocumentos })
-  const autorizarController = useAutorizarDocumento({ onSuccess: esEstudio ? aprobadosCtrl.refrescar : refrescarDocumentos })
+  const autorizarController = useAutorizarDocumento({ onSuccess: refrescarDocumentos })
+  const estudiosController = useEstudios()
+
+  const abrirFiltro = () => {
+    filtrarController.abrir()
+    void estudiosController.cargarEstudios()
+  }
+
+  const abrirAgregar = () => {
+    agregarController.abrir()
+    void estudiosController.cargarEstudios()
+  }
 
   const intro = isAdmin
     ? {
@@ -101,8 +123,8 @@ function MainDashboard() {
             onSearchInput={cancelSearch}
             onPageChange={handlePageChange}
             totalItems={total}
-            onFilter={() => filtrarController.abrir()}
-            onAdd={() => agregarController.abrir()}
+            onFilter={abrirFiltro}
+            onAdd={abrirAgregar}
             actions={[
               {
                 label: 'Ver',
@@ -120,11 +142,30 @@ function MainDashboard() {
             ]}
           />
           
-          <DashboardFilter controller={filtrarController} ocultarEstado/>
-          <DashboardVisualizar controller={visualizarController} />
-          <DashboardHabilitarDescarga controller={habilitarDescargaController} />
-          <DashboardAgregar controller={agregarController} />
-          <DashboardAutorizar controller={autorizarController} />
+          <Suspense fallback={null}>
+            {filtrarController.open && (
+              <DashboardFilter
+                controller={filtrarController}
+                estudioData={estudiosController.estudioData}
+                loadingEstudios={estudiosController.loading}
+                ocultarEstado
+              />
+            )}
+            {visualizarController.open && (
+              <DashboardVisualizar controller={visualizarController} />
+            )}
+            {habilitarDescargaController.open && (
+              <DashboardHabilitarDescarga controller={habilitarDescargaController} />
+            )}
+            {agregarController.open && (
+              <DashboardAgregar
+                controller={agregarController}
+                estudioData={estudiosController.estudioData}
+                loadingEstudios={estudiosController.loading}
+              />
+            )}
+            {autorizarController.open && <DashboardAutorizar controller={autorizarController} />}
+          </Suspense>
           </>
         ):
         (

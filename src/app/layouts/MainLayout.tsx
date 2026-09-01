@@ -10,6 +10,7 @@ import {
 import { Sidebar } from './Sidebar'
 import { useAuth } from '../../features/auth/context/AuthContext'
 import { fontFamily } from '../../shared/styles/typography'
+import { tieneRolSupervisor } from '../../shared/utils/roles'
 
 const STORAGE_KEY = 'sidebarExpanded'
 
@@ -27,7 +28,7 @@ export function MainLayout() {
   const toggleSidebar = () => setSidebarExpanded((v) => !v)
 
   const name = payload?.nombre ?? 'Invitado'
-  const role = payload?.rol === 'admin' ? 'Administrador' : (payload?.empresa ?? 'Usuario')
+  const role = tieneRolSupervisor(payload?.rol_ids) ? 'Administrador' : (payload?.empresa ?? 'Usuario')
   const initials =
     name
       .split(' ')
