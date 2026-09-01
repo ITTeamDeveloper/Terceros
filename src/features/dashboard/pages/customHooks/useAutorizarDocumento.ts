@@ -26,7 +26,6 @@ export function useAutorizarDocumento({ onSuccess }: UseAutorizarDocumentoArgs =
   const open = !!target
 
   const abrir = (row: ClienteDocumentoFila) => {
-    console.log("abir ===>", row)
     setTarget({
       aprobar: true,
       estudio: row.estudio,
